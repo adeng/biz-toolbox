@@ -42,6 +42,7 @@
 					<div class="navbar-collapse collapse">
 						<ul class="nav navbar-nav">
 							<li id="bsLi" class="active"><a onclick="showSection('bs');" href="javascript:void(0);">Balance Sheet Scraper</a></li>
+							<li id="bsrLi"><a onclick="showSection('bsr');" href="javascript:void(0);">Balance Sheet Ratios</a></li>
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li><a href="../sendFeedback.html">Leave Feedback</a></li>
@@ -73,14 +74,31 @@
 
 		<div id="bsDash" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         	<h1 class="page-header">Balance Sheet Analysis</h1>
-        	<div class="container section-holder" style="width:auto;" id="bsSection">
 
+        	<!-- Scraper -->
+        	<div class="container section-holder" style="width:auto;" id="bsSection">
 	        	<h3>Balance Sheet Scraper</h3><hr style="margin-top:10px; margin-bottom:10px;">
     			<label for="quote">Enter stock ticker symbol: </label>
 	        	<div class="input-group">
     				<input type="text" class="form-control" placeholder="Enter stock quote..." id="quote">
     				<span class="input-group-btn">
-    					<button class="btn btn-primary" type="button" id="bsGet" onclick="getBalanceSheet( quote.value );">Get Balance Sheet</button>
+    					<button class="btn btn-primary" type="button" id="bsGet" onclick="getBalanceSheet( quote.value, 0, 'bs' );">Get Balance Sheet</button>
+    				</span>
+    			</div>
+
+    			<br />
+    			
+	        </div>
+
+	        <!-- Ratios -->
+
+	        <div class="container section-holder" style="width:auto;" id="bsrSection" hidden>
+	        	<h3>Balance Sheet Ratios</h3><hr style="margin-top:10px; margin-bottom:10px;">
+    			<label for="quote">Enter stock ticker symbol: </label>
+	        	<div class="input-group">
+    				<input type="text" class="form-control" placeholder="Enter stock quote..." id="quoteR">
+    				<span class="input-group-btn">
+    					<button class="btn btn-primary" type="button" id="bsrGet" onclick="getBalanceSheet( quoteR.value, 1, 'bsr' );">Get Ratios</button>
     				</span>
     			</div>
 

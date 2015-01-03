@@ -15,6 +15,8 @@ function genBalanceSheet( statementArray ) {
     						'<th class="text-right">' + statementArray[2]['period'] + '</th>' +
     					'</tr></thead><tbody>';
 
+    // Generate rest
+
     tableString += '<tr><td><b>Assets</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
     tableString += '<tr><td><b>&nbsp;&nbsp;&nbsp;Current Assets</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
     current = true;
@@ -71,4 +73,51 @@ function genBalanceSheet( statementArray ) {
     tableString += '</tbody></table>';
 
     $("#bsSection").append( tableString );
+}
+
+function genRatios( statementArray ) {
+	$("#loading").remove();
+	var tableString = "";
+
+	// Generate header
+	tableString += '<h4 id="balanceHeader">Balance Sheet Ratios for ' + quote.value + '</h4>';
+
+	tableString += '<table id="balanceSheetTable" class="table table-hover">' +
+    					'<thead><tr>' +
+    						'<th class="text-center">Asset</th>' +
+    						'<th></th>' +
+    						'<th></th>' +
+    						'<th class="text-right">' + statementArray[0]['period'] + '</th>' +
+    						'<th class="text-right">' + statementArray[1]['period'] + '</th>' +
+    						'<th class="text-right">' + statementArray[2]['period'] + '</th>' +
+    					'</tr></thead><tbody>';
+
+    // Generate rest
+    tableString += '<tr>';
+    tableString += '<td>Current Ratio</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + currentRatio( statementArray[0]['TotalCurrentAssets']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + currentRatio( statementArray[1]['TotalCurrentAssets']['content'], statementArray[1]['TotalCurrentLiabilities']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + currentRatio( statementArray[2]['TotalCurrentAssets']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] ) + '</td>';
+    tableString += '</tr>';
+
+    // ....annnnnd Fin :D
+    tableString += '</tbody></table>';
+
+    $("#bsrSection").append( tableString );
+
+}
+
+// Calculator functions
+function currentRatio( currAssets, currLiabilities )
+{
+	console.log( currAssets );
+	console.log( currLiabilities );
+	var ca = parseInt( currAssets );
+	var cl = parseInt( currLiabilities );
+	if( ca == 0 || cl == 0 || ca * 1 != ca || cl * 1 != cl )
+		return "-";
+	else
+		return ( ca / cl ).toFixed( 2 );
 }

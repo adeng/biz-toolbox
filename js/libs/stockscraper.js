@@ -1,8 +1,13 @@
-function getBalanceSheet( quote )
+/*
+ * Request: 0 - Display
+ * Request: 1 - Ratios
+ */
+
+function getBalanceSheet( quote, request, section )
 {
 	$("#balanceSheetTable").remove();
 	$("#balanceHeader").remove();
-	$("#bsSection").append("<p id='loading'>Fetching data, please be patient!</p>");
+	$("#" + section + "Section").append("<p id='loading'>Fetching data, please be patient!</p>");
 	var requestURL = 'https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20yahoo.finance.balancesheet%20WHERE%20symbol=%27' + quote + '%27%20AND%20timeframe=%27annual%27&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback='
 
 	console.log( requestURL );
@@ -16,10 +21,15 @@ function getBalanceSheet( quote )
         success: function ( json ) {
         	var sArray = json['query']['results']['balancesheet']['statement'];
 
-        	if( typeof sArray != "undefined" )
-       			genBalanceSheet( sArray );
+        	if( typeof sArray != "undefined" ) 
+        	{
+        		if( request == 0 )
+       				genBalanceSheet( sArray );
+       			if( request == 1 )
+       				genRatios( sArray );
+        	}
        		else {
-       			$("#bsSection").append("<p id='balanceSheetTable'>We're sorry, this quote does not appear to have any data.</p>");
+       			$("#" + section + "Section" ).append("<p id='balanceSheetTable'>We're sorry, this quote does not appear to have any data.</p>");
        			$("#loading").remove();
        		}
         }
