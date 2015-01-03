@@ -36,7 +36,7 @@ function genBalanceSheet( statementArray ) {
 			tableString += '&nbsp;&nbsp;&nbsp;';
 
 		if( asset.indexOf( "Total" ) != -1 )
-			tableString += "<b>";
+			tableString += "<b>&nbsp;&nbsp;&nbsp;";
 
 		if( asset == "PropertyPlantandEquipment" )
 			tableString += "Property, Plant, and Equipment";
