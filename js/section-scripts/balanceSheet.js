@@ -128,6 +128,52 @@ function genRatios( statementArray ) {
     tableString += '<td class="text-right">' + debtEquityRatio( statementArray[2]['LongTermDebt']['content'], statementArray[2]['Short_CurrentLongTermDebt']['content'], statementArray[2]['TotalStockholderEquity']['content'] ) + '</td>';
     tableString += '</tr>';
 
+    // Something something soccer ball pun about headers
+    tableString += '<tr><td><b>Utilization Ratios</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+    // Generate days-sales in inventory
+    tableString += '<tr>';
+    tableString += '<td>&nbsp;&nbsp;&nbsp;Days Sales in Inventory</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + daysSalesRatio( statementArray[0]['Inventory']['content'], savedInfo[0][1], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
+    tableString += '<td class="text-right">' + daysSalesRatio( statementArray[1]['Inventory']['content'], savedInfo[1][1], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
+    tableString += '<td class="text-right">' + daysSalesRatio( statementArray[2]['Inventory']['content'], savedInfo[2][1], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
+    tableString += '</tr>';
+
+    // Generate days-sales outstanding
+    tableString += '<tr>';
+    tableString += '<td>&nbsp;&nbsp;&nbsp;Days Sales Outstanding</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + daysSalesOut( statementArray[0]['NetReceivables']['content'], savedInfo[0][0], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
+    tableString += '<td class="text-right">' + daysSalesOut( statementArray[1]['NetReceivables']['content'], savedInfo[1][0], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
+    tableString += '<td class="text-right">' + daysSalesOut( statementArray[2]['NetReceivables']['content'], savedInfo[2][0], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
+    tableString += '</tr>';
+
+    // Last header
+    tableString += '<tr><td><b>Profitability Ratios</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+    // Generate ROE
+    tableString += '<tr>';
+    tableString += '<td>&nbsp;&nbsp;&nbsp;Return on Equity</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[0][3], statementArray[0]['TotalStockholderEquity']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[1][3], statementArray[1]['TotalStockholderEquity']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[2][3], statementArray[2]['TotalStockholderEquity']['content'] ) + '</td>';
+    tableString += '</tr>';
+
+    // Generate ROA
+    tableString += '<tr>';
+    tableString += '<td>&nbsp;&nbsp;&nbsp;Return on Assets</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[0][2], statementArray[0]['TotalAssets']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[1][2], statementArray[1]['TotalAssets']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[2][2], statementArray[2]['TotalAssets']['content'] ) + '</td>';
+    tableString += '</tr>';
+
     // ....annnnnd Fin :D
     tableString += '</tbody></table>';
 
@@ -165,10 +211,6 @@ function quickRatio( cash, sti, receive, currLiabilities )
 
 function debtEquityRatio( ltdebt, stdebt, tsEquity )
 {
-
-	console.log( ltdebt );
-	console.log( stdebt );
-	console.log( tsEquity );
 	console.log( "-" );
 	var de = 0;
 	if( parseInt( ltdebt ) * 1 == parseInt( ltdebt ) )
@@ -182,4 +224,48 @@ function debtEquityRatio( ltdebt, stdebt, tsEquity )
 		return "-";
 	else
 		return ( de / te ).toFixed( 2 );
+}
+
+function daysSalesRatio( inventory, cogs, newPer, oldPer )
+{
+	var diffInMilliseconds = new Date( newPer ).getTime() - new Date( oldPer ).getTime();
+	var daysInPer = diffInMilliseconds / 1000 / 60 / 60 / 24;
+
+	var inv = parseInt( inventory );
+	if( inv * 1 != inv || inv == 0 || cogs == 0 )
+		return "-";
+	else
+		return Math.round( inv / ( cogs / daysInPer ));
+}
+
+function daysSalesOut( receive, sales, newPer, oldPer )
+{
+	var diffInMilliseconds = new Date( newPer ).getTime() - new Date( oldPer ).getTime();
+	var daysInPer = diffInMilliseconds / 1000 / 60 / 60 / 24;
+
+	var ar = parseInt( receive );
+	if( ar * 1 != ar || ar == 0 || sales == 0 )
+		return "-";
+	else
+		return Math.round( ar / ( sales / daysInPer ));
+}
+
+function returnOnEquity( netIncome, tsEquity )
+{
+	var ts = parseInt( tsEquity );
+
+	if( ts * 1 != ts || ts == 0 )
+		return "-";
+	else
+		return ( 100 * netIncome / ts ).toFixed( 2 ) + "%";
+}
+
+function returnOnAssets( EBIT, tAssets )
+{
+	var ta = parseInt( tAssets );
+
+	if( ta * 1 != ta || ta == 0 )
+		return "-";
+	else
+		return ( 100 * EBIT / ta ).toFixed( 2 ) + "%";
 }
