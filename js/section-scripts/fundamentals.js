@@ -1,4 +1,7 @@
 var profitMarginArray = new Array();
+var grossProfitArray = new Array();
+var returnAssetsArray =  new Array();
+var returnEquityArray = new Array();
 
 function genRatios( statementArray ) {
 	$("#loading").remove();
@@ -116,14 +119,16 @@ function genRatios( statementArray ) {
     tableString += '<td class="text-right">' + returnOnAssets( savedInfo[2][2], statementArray[2]['TotalAssets']['content'] ) + '</td>';
     tableString += '</tr>';
 
+    returnEquityArray = [ parseInt( returnOnEquity( savedInfo[0][4], statementArray[0]['TotalStockholderEquity']['content'] )), parseInt( returnOnEquity( savedInfo[1][4], statementArray[1]['TotalStockholderEquity']['content'] )), parseInt( returnOnEquity( savedInfo[2][4], statementArray[2]['TotalStockholderEquity']['content'] )) ];
+
     // Generate ROE
-    tableString += '<tr>';
+    tableString += '<tr ' + rowStyle( returnEquityArray) + '>';
     tableString += '<td class="ratio-li">Return on Equity</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
-    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[0][3], statementArray[0]['TotalStockholderEquity']['content'] ) + '</td>';
-    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[1][3], statementArray[1]['TotalStockholderEquity']['content'] ) + '</td>';
-    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[2][3], statementArray[2]['TotalStockholderEquity']['content'] ) + '</td>';
+    tableString += '<td id="roeCurrPer" class="text-right">' + returnOnEquity( savedInfo[0][4], statementArray[0]['TotalStockholderEquity']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[1][4], statementArray[1]['TotalStockholderEquity']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnEquity( savedInfo[2][4], statementArray[2]['TotalStockholderEquity']['content'] ) + '</td>';
     tableString += '</tr>';
 
     // ....annnnnd Fin :D
@@ -164,7 +169,6 @@ function quickRatio( cash, sti, receive, currLiabilities )
 
 function debtEquityRatio( ltdebt, stdebt, tsEquity )
 {
-	console.log( "-" );
 	var de = 0;
 	if( parseInt( ltdebt ) * 1 == parseInt( ltdebt ) )
 		de += parseInt( ltdebt );
@@ -328,6 +332,37 @@ function writeReport()
         rpt += "not changed drastically. Depending on the industry average, this company may be a good investment or not. ";
 
     rpt += "</p><p>Do note that since this application uses EBIT and not EBITDA to calculate RoA, it is possible that the company is taking creative liberties with its depreciation accounting policies to influence this ratio.";
+
+    rpt += "</p><br /><p>";
+
+    // Return on Equity
+
+    rpt += "<b>Return on Equity: </b>While similar to return on assets, this metric determines the return applicable to the company's shareholders. This percentage is useful for determining how effective a company is for the people that truly matter, the shareholders :) For the purposes of this application, this is calculated using the company's Net Income Applicable to Common Shareholders (excluding preferred capital distributions). ";
+    rpt += "</p><p>This company's return on equity for the prior period is " + $("#roeCurrPer").text() + ". This means that for every dollar of stockholder funds, the company returns a profit of approximately " + returnEquityArray[0] + " cents to said shareholders. ";
+
+    rpt += "</p><p>This company's return on equity ratio is ";
+    if( parseFloat( $("#roeCurrPer").text() ) > parseFloat( $("#roaCurrPer").text() ))
+        rpt += "greater than its return on assets. This means that the company is generating higher returns for its shareholders than its creditors. Be cautious, however; a company can manipulate this ratio by taking on a large amount of debt. ";
+    else
+        rpt += "less than its return on assets. Usually, a healthy company's assets should be lower than its equity. In this very strange case, however, the company is generating a higher return on assets than its return on equity. It may not be a good idea to invest in this company. ";
+
+    rpt += "</p><p>The company's return on equity has ";
+    if( increasingArray( returnEquityArray )) {
+        rpt += "exhibited an increasing trend over the past several years. This means that the company is improving overall performance on behalf of its shareholders. Again, the company could be manipulating this metric by taking on a large amount of debt. ";
+        if( parseFloat( $("#roeCurrPer").text() ) > parseFloat( $("#roaCurrPer").text() ))
+            rpt += "Since the company's return on equity ratio is higher than its return on assets, however, the company is managing its liabilities well. ";
+        else
+            rpt += "Since the company's return on equity ratio is NOT higher than its return on assets, the company may not be managing these new liabilities well (if it is taking on new liabilities). In either case, this is not a good sign, and it is probably not a good idea to invest in this company. ";
+    }
+    else if( decreasingArray( returnEquityArray ))
+        rpt += "exhibited a decreasing trend over the past several years. This is not a good sign; this means that the company is growing less profitable to its shareholders, and is potentially indicative of bad management on behalf of shareholders. It is possible that the company is paying off a large amount of debt right now; check the balance sheet to see if this is the case. If not, then this is not a good sign for the company, and it is probably not a good investment. ";
+    else if( returnEquityArray[0] - returnEquityArray[1] > sigDiff )
+        rpt += "increased sharply in the past year. While this is normally good news, it is possible that the company has taken on a large amount of debt in the past year, manipulating this ratio. Otherwise, check the news to see if there is any reason for this increase. ";
+    else if( returnEquityArray[1] - returnEquityArray[0] > sigDiff )
+        rpt += "decreased sharply in the past year. This is not normally news for celebration, but it is posssible the company has just paid off a large amount of debt. Check the financials to see if this is the case; otherwise, check the news to see if there is anything that would affect the company's profitability. ";
+    else
+        rpt += "not really changed all that much. No major conclusions can really be drawn from this other than the company has not really changed since the last year. ";
+
     rpt += "</p></div>";
     return rpt;
 }

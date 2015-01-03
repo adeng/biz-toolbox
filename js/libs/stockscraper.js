@@ -43,7 +43,7 @@ function getBalanceSheet( quote, request, section )
 /*
  * Request: 0 - Display
  * Request: 1 - Ratios
- * Request: 2 - array( [ Sales, COGS, EBITDA or Pre-Tax Income + Interest Expense, Net Income ], <y2>, <y3> )
+ * Request: 2 - array( [ Sales, COGS, EBITDA or Pre-Tax Income + Interest Expense, Net Income, NI for Common ], <y2>, <y3> )
  *
  */
 var savedInfo;
@@ -72,13 +72,13 @@ function getIncomeStatement( quote, request, section )
         		if( request == 0 )
         			genIncomeStatement( sArray );
         		if( parseInt( request ) == 2 ) {
-        			savedInfo = [[ parseInt( sArray[0]['TotalRevenue']['content'] ), parseInt( sArray[0]['CostofRevenue']['content'] ), parseInt( sArray[0]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[0]['NetIncomeFromContinuingOps']['content'] ) ], [ parseInt( sArray[1]['TotalRevenue']['content'] ), parseInt( sArray[1]['CostofRevenue']['content'] ), parseInt( sArray[1]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[1]['NetIncomeFromContinuingOps']['content'] ) ], [ parseInt( sArray[2]['TotalRevenue']['content'] ), parseInt( sArray[2]['CostofRevenue']['content'] ), parseInt( sArray[2]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[2]['NetIncomeFromContinuingOps']['content'] ) ]];
+        			savedInfo = [[ parseInt( sArray[0]['TotalRevenue']['content'] ), parseInt( sArray[0]['CostofRevenue']['content'] ), parseInt( sArray[0]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[0]['NetIncomeFromContinuingOps']['content'] ), parseInt( sArray[0]['NetIncomeApplicableToCommonShares']['content'] ) ], [ parseInt( sArray[1]['TotalRevenue']['content'] ), parseInt( sArray[1]['CostofRevenue']['content'] ), parseInt( sArray[1]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[1]['NetIncomeFromContinuingOps']['content'] ), parseInt( sArray[1]['NetIncomeApplicableToCommonShares']['content'] ) ], [ parseInt( sArray[2]['TotalRevenue']['content'] ), parseInt( sArray[2]['CostofRevenue']['content'] ), parseInt( sArray[2]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[2]['NetIncomeFromContinuingOps']['content'] ), parseInt( sArray[2]['NetIncomeApplicableToCommonShares']['content'] ) ]];
         		}
         	}
        		else {
        			$("#" + section + "Section" ).append("<p id='incomeStatementTable'>We're sorry, this quote does not appear to have any data.</p>");
        			$("#loading").remove();
-       		}
+       		}	
         }
     });
 }
