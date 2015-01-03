@@ -322,7 +322,7 @@ function writeReport()
 
     if( returnAssetsArray[0] - returnAssetsArray[1] >= sigDiff )
         rpt += "increased significantly, indicating that the company has become significantly more efficient in using its resources. It is worth investigating this change. Some possibilities include a reduction in expenses or an increase in revenues, all while holding assets constant. It is also possible that the company is 'consuming' its assets without replenishing them, which is not as beneficial to the company's health. ";
-    else if ( returnAssetsArray[0] - returnAssetsArray[1] =< -1 * sigDiff )
+    else if ( returnAssetsArray[0] - returnAssetsArray[1] <= -1 * sigDiff )
         rpt += "decreased significantly, indicating that something has affected the company's efficiency in using its assets. It is possible that the company has recently increased its assets without a corresponding increase in profitability; perhaps it hasn't had time to make use of its acquisition. The less cheery possibility also exists, that the company isn't using its assets as effectively as it once did, perhaps due to competitive pressure, bad strategy, or an economic downturn. ";
     else
         rpt += "not changed drastically. Depending on the industry average, this company may be a good investment or not. ";
