@@ -2,7 +2,7 @@ function genBalanceSheet( statementArray ) {
 	$("#loading").remove();
 	var tableString = "";
 	// Generate header
-	tableString += '<h4>Balance Sheet for ' + quote.value + '</h4>';
+	tableString += '<h4 id="balanceHeader">Balance Sheet for ' + quote.value + '</h4>';
 
 	tableString += '<table id="balanceSheetTable" class="table table-hover">' +
     					'<thead><tr>' +
