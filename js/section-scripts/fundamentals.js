@@ -1,3 +1,5 @@
+var profitMarginArray = new Array();
+
 function genRatios( statementArray ) {
 	$("#loading").remove();
 	var tableString = "";
@@ -76,6 +78,18 @@ function genRatios( statementArray ) {
 
     // Last header
     tableString += '<tr><td><b>Profitability Ratios</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+    profitMarginArray = [ parseFloat(profitMargin( savedInfo[0][2], savedInfo[0][3] )), parseFloat(profitMargin( savedInfo[1][2], savedInfo[1][3] )), parseFloat(profitMargin( savedInfo[2][2], savedInfo[2][3] ))];
+
+    // Generate Profit Margin
+    tableString += '<tr ' + rowStyle( profitMarginArray ) + '>';
+    tableString += '<td>&nbsp;&nbsp;&nbsp;Profit Margin</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + profitMargin( savedInfo[0][2], savedInfo[0][3] ) + '</td>';
+    tableString += '<td class="text-right">' + profitMargin( savedInfo[1][2], savedInfo[1][3] ) + '</td>';
+    tableString += '<td class="text-right">' + profitMargin( savedInfo[2][2], savedInfo[2][3] ) + '</td>';
+    tableString += '</tr>';
 
     // Generate ROE
     tableString += '<tr>';
@@ -191,4 +205,31 @@ function returnOnAssets( EBIT, tAssets )
 		return "-";
 	else
 		return ( 100 * EBIT / ta ).toFixed( 2 ) + "%";
+}
+
+function profitMargin( sales, netIncome )
+{
+    return (( 100 * netIncome )/sales).toFixed( 2 ) + "%";
+}
+
+// Helper functions
+
+function rowStyle( arr )
+{
+    if( increasingArray( arr ))
+        return "class='success'";
+    else if( decreasingArray( arr ))
+        return "class='danger'";
+    else
+        return "";
+}
+
+function increasingArray( arr )
+{
+    return arr[0] > arr[1] && arr[1] > arr[2];
+}
+
+function decreasingArray( arr )
+{
+    return arr[0] < arr[1] && arr[1] < arr[2];
 }
