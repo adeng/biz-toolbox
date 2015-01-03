@@ -38,7 +38,12 @@ function genBalanceSheet( statementArray ) {
 		if( asset.indexOf( "Total" ) != -1 )
 			tableString += "<b>";
 
-		tableString += display;
+		if( asset == "PropertyPlantandEquipment" )
+			tableString += "Property, Plant, and Equipment";
+		else if( asset == "Short_CurrentLongTermDebt" ) 
+			tableString += "Short-Term Portion of Long Term Debt";
+		else
+			tableString += unCamel( display );
 
 		if( asset.indexOf( "Total" ) != -1 )
 			tableString += "</b>";

@@ -95,6 +95,19 @@ function generateJESeries( accountArrayArray, series )
 
 // Helper methods
 
+function unCamel( string )
+{
+	var fullString = string[0];
+	for( var i = 1; i < string.length; i++ )
+	{
+		if( string[i] == string[i].toUpperCase() )
+			fullString += " ";
+		fullString += string[i];
+	}
+
+	return fullString;
+}
+
 function numDigits( number )
 {
 	if ( number % 10 == number )
@@ -141,3 +154,5 @@ function sorter( arrayName )
 		return dateA.getTime() - dateB.getTime();
 	});
 }
+
+// Finance functions!
