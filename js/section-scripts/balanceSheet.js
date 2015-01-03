@@ -80,7 +80,7 @@ function genRatios( statementArray ) {
 	var tableString = "";
 
 	// Generate header
-	tableString += '<h4 id="balanceHeader">Balance Sheet Ratios for ' + quote.value + '</h4>';
+	tableString += '<h4 id="balanceHeader">Balance Sheet Ratios for ' + quoteR.value + '</h4>';
 
 	tableString += '<table id="balanceSheetTable" class="table table-hover">' +
     					'<thead><tr>' +
