@@ -84,7 +84,7 @@ function genRatios( statementArray ) {
 
 	tableString += '<table id="balanceSheetTable" class="table table-hover">' +
     					'<thead><tr>' +
-    						'<th class="text-center">Asset</th>' +
+    						'<th class="text-center"></th>' +
     						'<th></th>' +
     						'<th></th>' +
     						'<th class="text-right">' + statementArray[0]['period'] + '</th>' +
@@ -120,7 +120,7 @@ function genRatios( statementArray ) {
 
     // Generate debt-equity ratio
     tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Debt-Equity Ratio</td>';
+    tableString += '<td>&nbsp;&nbsp;&nbsp;LT Debt-Equity Ratio</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
     tableString += '<td class="text-right">' + debtEquityRatio( statementArray[0]['LongTermDebt']['content'], statementArray[0]['Short_CurrentLongTermDebt']['content'], statementArray[0]['TotalStockholderEquity']['content'] ) + '</td>';
