@@ -49,6 +49,8 @@ var savedInfo;
 
 function getIncomeStatement( quote, request, section )
 {
+	$("#incomeStatementTable").remove();
+	$("#incomeHeader").remove();
 	$("#" + section + "Section").append("<p id='loading'>Fetching data, please be patient!</p>");
 	var requestURL = 'https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20yahoo.finance.incomestatement%20WHERE%20symbol%3D%27' + quote + '%27%20AND%20timeframe%3D%27annual%27&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=';
 
@@ -66,6 +68,8 @@ function getIncomeStatement( quote, request, section )
         	console.log( sArray );
         	if( typeof sArray != "undefined" ) 
         	{
+        		if( request == 0 )
+        			genIncomeStatement( sArray );
         		if( parseInt( request ) == 2 ) {
         			savedInfo = [[ parseInt( sArray[0]['TotalRevenue']['content'] ), parseInt( sArray[0]['CostofRevenue']['content'] ), parseInt( sArray[0]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[0]['NetIncomeFromContinuingOps']['content'] ) ], [ parseInt( sArray[1]['TotalRevenue']['content'] ), parseInt( sArray[1]['CostofRevenue']['content'] ), parseInt( sArray[1]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[1]['NetIncomeFromContinuingOps']['content'] ) ], [ parseInt( sArray[2]['TotalRevenue']['content'] ), parseInt( sArray[2]['CostofRevenue']['content'] ), parseInt( sArray[2]['EarningsBeforeInterestAndTaxes']['content'] ), parseInt( sArray[2]['NetIncomeFromContinuingOps']['content'] ) ]];
         		}
