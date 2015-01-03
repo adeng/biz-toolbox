@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="author" content="Albert Deng">
+
+	    <!-- Bootstrap core CSS -->
+	    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+		<script type='text/javascript' src="../js/jquery.min.js"></script>
+	    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	    <script type="text/javascript" src="../js/bootbox.min.js"></script>
+	    <script type='text/javascript' src='../js/script.js'></script>
+
+	    <link href="../css/dashboard.css" rel="stylesheet">
+
+	    <!-- TODO: Conditionally loaded scripts -->
+	    <script type='text/javascript' src="../js/section-scripts/ch12-120A.js"></script>
+
+	    <title>Accounting Generators</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="../index.html">Accounting Toolbox</a>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li id="tradingLi" class="active"><a onclick="showSection('trading');" href="javascript:void(0);">Trading</a></li>
+							<li id="AFSLi"><a onclick="showSection('AFS');" href="javascript:void(0);">Available-For-Sale</a></li>
+							<li id="EquityLi"><a onclick="showSection('Equity');" href="javascript:void(0);">Significant Influence</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li><a onclick="logout();" href>Leave Feedback</a></li>
+							<li><a href="#"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+								<input type="hidden" name="cmd" value="_s-xclick">
+								<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+								"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+								<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li class="divider"><h4>Generators</h4></li>
+					<li id="receivableLi"><a href="ch7-120A.html">Accounts Receivable</a></li>
+					<li id="noteLi"><a href="ch7A-120A.html">Notes Receivable</a></li>
+					<li id="investmentLi" class="active"><a href="javascript:void(0);">Equity Investments</a></li>
+					<li id="bondLi"><a href="ch14-120B.html">Debt Securities</a></li>
+					<li id="leaseLi"><a href="ch15-120B.html">Leases</a></li>
+					<li class="divider"><h4>Calculators</h4></li>
+					<li id="pvCalcLi"><a href="../calc/pvCalc.html">Present Value</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="investmentDash" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        	<h1 class="page-header">Investments</h1>
+        	<div class="container section-holder" style="width:auto;" id="tradingSection">
+
+        		<!-- Trading Securities -->
+	        	<h3>Trading Securities</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div id="tradingErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="tradingErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="tradingWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="tradingWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+	        	<div class="row">
+					<div class="form-group col-md-3">
+		        		<label for="price12">Purchase Price Per Share</label>
+		        		<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="price12" placeholder="Enter purchase price" required>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="num12">Number of Shares</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="num12" placeholder="Enter shares" required>
+			        		<div class="input-group-addon">shares</div>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-6">
+		        		<label for="pDate12">Purchase Date</label>
+		        		<input type="date" class="form-control" id="pDate12" required><br />
+
+		        		<button onclick="tradingAddPurchase(price12.value, num12.value, pDate12.value);" type="button" class="btn btn-primary pull-right">Add Purchase</button>
+		        	</div>
+	        	</div><br />
+
+	        	<!-- Dividends -->
+	        	<div class="row">
+	        		<div class="form-group col-md-6">
+	        			<label for="divAmt12">Dividends Per Share</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="divAmt12" placeholder="Enter dividend amount per share" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="divDate12">Dividend Date</label>
+		        		<input type="date" class="form-control" id="divDate12" required><br />
+
+		        		<button onclick="tradingAddDividend(divAmt12.value, divDate12.value);" type="button" class="btn btn-primary pull-right">Add Dividend</button>
+		        	</div><br />
+		        </div>
+
+		        <!-- Price Changes -->
+				<div class="row">
+	        		<div class="form-group col-md-6">
+	        			<label for="endPrice12">Market Price at End of Year</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="endPrice12" placeholder="Enter market price at end of year" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="endDate12">Year</label>
+		        		<select class="form-control" id="endDate12">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#endDate12").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        		<br />
+		        		<button onclick="tradingAdjustment( endPrice12.value, endDate12.value );" type="button" class="btn btn-primary pull-right">Add Mark-to-Market</button>
+		        	</div><br />
+		        </div>
+
+		        <!-- Sale of Investment -->
+		        <div class="row">
+					<div class="form-group col-md-3">
+						<label for="sPrice12">Sale Price Per Share</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="sPrice12" placeholder="Enter sale price" required>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="sNum12">Number of Shares</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="sNum12" placeholder="Enter shares" required>
+			        		<div class="input-group-addon">shares</div>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-6">
+		        		<label for="sDate12">Sale Date</label>
+		        		<input type="date" class="form-control" id="sDate12" required><br />
+
+		        		<button onclick="tradingAddSale(sPrice12.value, sNum12.value, sDate12.value);" type="button" class="btn btn-primary pull-right">Add Sale</button>
+		        	</div>
+	        	</div><br />
+
+	        	<div id="tradingEntries" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">#</th>
+	        					<th class="text-center">Amount</th>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Existing Balance</th>
+	        					<th class="text-center">Notes</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div>
+	        	<br />
+	        	<button onclick="tradingJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="tradingContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+	        </div>
+
+	        <div id="AFSSection" class="container section-holder" style="width:auto;" hidden>
+
+        		<!-- AFS Securities -->
+	        	<h3>Available-for-Sale Securities</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div id="AFSErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="AFSErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="AFSWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="AFSWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div class="row">
+	    			<div class="form-group col-md-6">
+			    		<div class="checkbox" style="padding-left:5%">
+							<label>
+								<input onchange="AFSTaxes = !AFSTaxes; AFSTaxes ? $('#AFSTaxGroup').css('visibility','visible') : $('#AFSTaxGroup').css('visibility', 'hidden');" id="AFSTaxEffect" type="checkbox" checked="checked"> Ignore Tax Effect?
+							</label>
+						</div>
+					</div>
+					<div class="form-group col-md-3">
+					</div>
+					<div class="form-group col-md-3" style="visibility:hidden;" id="AFSTaxGroup">
+						<label for="AFSTaxRate">Income Tax Percentage</label>
+	        			<div class="input-group">
+			        		<input onchange="$('#AFSTaxRate').prop('disabled', true); AFSSort(); AFSUpdateTable();" type="number" min='0' max='100' class="form-control" id="AFSTaxRate" placeholder="Enter tax percent" required data-toggle="tooltip" data-placement="bottom" title="Enter percentage as an integer">
+							<div class="input-group-addon">%</div>
+			        	</div>
+					</div>
+				</div>
+	        	<div class="row">
+					<div class="form-group col-md-3">
+		        		<label for="priceAFS">Purchase Price Per Share</label>
+		        		<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="priceAFS" placeholder="Enter purchase price" required>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="numAFS">Number of Shares</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="numAFS" placeholder="Enter shares" required>
+			        		<div class="input-group-addon">shares</div>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-6">
+		        		<label for="pDateAFS">Purchase Date</label>
+		        		<input type="date" class="form-control" id="pDateAFS" required><br />
+
+		        		<button onclick="AFSAddPurchase(priceAFS.value, numAFS.value, pDateAFS.value);" type="button" class="btn btn-primary pull-right">Add Purchase</button>
+		        	</div>
+	        	</div><br />
+
+	        	<!-- Dividends -->
+	        	<div class="row">
+	        		<div class="form-group col-md-6">
+	        			<label for="divAmtAFS">Dividends Per Share</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="divAmtAFS" placeholder="Enter dividend amount per share" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="divDateAFS">Dividend Date</label>
+		        		<input type="date" class="form-control" id="divDateAFS" required><br />
+
+		        		<button onclick="AFSAddDividend(divAmtAFS.value, divDateAFS.value);" type="button" class="btn btn-primary pull-right">Add Dividend</button>
+		        	</div><br />
+		        </div>
+
+		        <!-- Price Changes -->
+				
+				<div class="row">
+	        		<div class="form-group col-md-6">
+	        			<label for="endPriceAFS">Market Price at End of Year</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="endPriceAFS" placeholder="Enter market price at end of year" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="endDateAFS">Year</label>
+		        		<select class="form-control" id="endDateAFS">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#endDateAFS").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        		<br />
+		        		<button onclick="AFSAdjustment( endPriceAFS.value, endDateAFS.value );" type="button" class="btn btn-primary pull-right">Add Mark-to-Market</button>
+		        	</div><br />
+		        </div>
+
+		        <!-- Sale of Investment -->
+		        <div class="row">
+					<div class="form-group col-md-3">
+						<label for="sPriceAFS">Sale Price Per Share</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="sPriceAFS" placeholder="Enter sale price" required>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="sNumAFS">Number of Shares</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="sNumAFS" placeholder="Enter shares" required>
+			        		<div class="input-group-addon">shares</div>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-6">
+		        		<label for="sDateAFS">Sale Date</label>
+		        		<input type="date" class="form-control" id="sDateAFS" required><br />
+
+		        		<button onclick="AFSAddSale(sPriceAFS.value, sNumAFS.value, sDateAFS.value);" type="button" class="btn btn-primary pull-right">Add Sale</button>
+		        	</div>
+	        	</div><br />
+
+	        	<div id="AFSEntries" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">#</th>
+	        					<th class="text-center">Amount</th>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Existing Balance</th>
+	        					<th class="text-center">Notes</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div>
+	        	<br />
+	        	<button onclick="AFSJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="AFSContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+	        </div>
+
+	        <div id="EquitySection" class="container section-holder" style="width:auto;" hidden>
+
+        		<!-- Equity Securities -->
+	        	<h3>Significant Influence Securities</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div id="EquityErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="EquityErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="EquityWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="EquityWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<br />
+
+	    		<!-- Purchase -->
+	    		<div class="row">
+		        	<div class="form-group col-md-3">
+		        		<label for="percentOwnEquity">Percentage of Ownership</label>
+		        		<div class="input-group">
+			        		<input type="number" onchange="updatePurchaseValue(percentOwnEquity.value, purchPriceEquity.value);" min='0' max='100' class="form-control" id="percentOwnEquity" placeholder="Enter ownership percent" required>
+			        		<div class="input-group-addon">%</div>
+			        	</div>
+		        	</div>
+					<div class="form-group col-md-3">
+		        		<label for="purchPriceEquity">Total Purchase Price</label>
+		        		<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" onchange="updatePurchaseValue(percentOwnEquity.value, purchPriceEquity.value);" min='0' class="form-control" id="purchPriceEquity" placeholder="Enter purchase price" required>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="impliedPurchaseValueEquity">Implied Book Value</label>
+		        		<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="text" min='0' class="form-control" id="impliedPurchaseValueEquity" placeholder="" required disabled>
+			        	</div>
+			        </div>
+			        <div class="form-group col-md-3">
+		        		<label for="pDateEquity">Purchase Date</label>
+		        		<input type="date" class="form-control" id="pDateEquity" required><br />
+		        	</div>
+	        	</div>
+	        	<div class="checkbox">
+					<label>
+						<input onchange="deprAssets = !deprAssets; deprAssets ? $('#deprRow').show() : $('#deprRow').hide()" id="deprEquity" type="checkbox"> Are there depreciable assets?
+					</label>
+				</div>
+	        	<div class="row" id="deprRow" hidden>
+	        		<div class="form-group col-md-3">
+	        			<label for="lifeEquity">Useful Life</label>
+	        			<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="lifeEquity" placeholder="Enter useful life" required>
+			        		<div class="input-group-addon">years</div>
+			        	</div>
+	        		</div>	
+	        		<div class="form-group col-md-3">
+	        			<label for="depPerEquity">Percentage Depreciable Assets</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' max='100' class="form-control" id="depPerEquity" placeholder="Enter depreciable percent" required data-toggle="tooltip" data-placement="right" title="Buildings and Equipment, NOT Land or Goodwill">
+							<div class="input-group-addon">%</div>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="bookValueEquity">Book Value of Net Assets</label>
+		        		<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input onchange="oneOrOther();" type="number" min='0' class="form-control" id="bookValueEquity" placeholder="Enter net book value" required data-toggle="tooltip" data-placement="left" title="Fill out this OR Overvalued Amount">
+			        	</div>
+	        		</div>	
+	        		<div class="form-group col-md-3">
+	        			<label for="overEquity">Overvalued Amount</label>
+		        		<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input onchange="oneOrOther();" type="number" min='0' class="form-control" id="overEquity" placeholder="Enter overvalued amount" required data-toggle="tooltip" data-placement="left" title="Fill out this OR Book Value of Net Assets">
+			        	</div>
+	        		</div>	
+	        	</div>
+	        	<div class="row">
+	        		<div class="form-group col-md-12">
+		        		<button onclick="equityAddPurchase( percentOwnEquity.value, purchPriceEquity.value, pDateEquity.value, lifeEquity.value, depPerEquity.value, $('#overEquity').data('value'));" type="button" class="btn btn-primary pull-right">Add Purchase</button>
+		        	</div>
+		        </div>
+	        	
+	        	<!-- Earnings -->
+	        	<div class="row">
+	        		<div class="form-group col-md-6">
+	        			<label for="earningsEquity">Net Income/Loss Reported</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="earningsEquity" placeholder="Enter investee's net income/loss for year" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="earningsDateEquity">Earnings Date</label>
+		        		<input type="date" class="form-control" id="earningsDateEquity" required><br />
+		        		<br />
+		        		<button onclick="equityAddEarnings( earningsEquity.value, earningsDateEquity.value );" type="button" class="btn btn-primary pull-right">Add Earnings</button>
+		        	</div><br />
+		        </div>
+
+		        <!-- Dividends -->
+	        	<div class="row">
+	        		<div class="form-group col-md-6">
+	        			<label for="divAmtEquity">Total Dividends Received</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="divAmtEquity" placeholder="Enter total dividends received" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="divDateEquity">Dividend Date</label>
+		        		<input type="date" class="form-control" id="divDateEquity" required><br />
+
+		        		<button onclick="equityAddDividend( divAmtEquity.value, divDateEquity.value );" type="button" class="btn btn-primary pull-right">Add Dividend</button>
+		        	</div><br />
+		        </div>
+
+	        	<!-- Sale -->
+	        	<div class="row">
+	        		<div class="form-group col-md-3">
+	        			<label for="saleEquity">Total Sale Amount</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="saleEquity" placeholder="Enter sale amount" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="salePercentEquity">Percent of Shares sold</label>
+	        			<div class="input-group">
+			        		<input type="number" min='0' max='100' class="form-control" id="salePercentEquity" placeholder="Enter percent sold" required>
+			        		<div class="input-group-addon">%</div>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="saleDateEquity">Sale Date</label>
+		        		<input type="date" class="form-control" id="saleDateEquity" required><br />
+
+		        		<button onclick="equityAddSale( saleEquity.value, salePercentEquity.value, saleDateEquity.value );" type="button" class="btn btn-primary pull-right">Add Sale</button>
+		        	</div><br />
+		        </div>
+
+	        	<div id="equityEntries" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">#</th>
+	        					<th class="text-center">Amount</th>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Existing Balance</th>
+	        					<th class="text-center">Notes</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div>
+	        	<br />
+	        	<button onclick="equityJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="equityContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+	        </div>
+
+	       	<!-- /.row -->
+
+	        <hr>
+
+	        <!-- Footer -->
+	        <footer>
+	            <div class="row">
+	                <div class="col-lg-12">
+	                    <p>Copyright &copy; Albert Deng 2014</p>
+	                </div>
+	            </div>
+	        </footer>
+        </div>
+
+        <!-- Viewport size detectors -->
+        <div class="device-xs visible-xs"></div>
+		<div class="device-sm visible-sm"></div>
+		<div class="device-md visible-md"></div>
+		<div class="device-lg visible-lg"></div>
+    </body>
+</html>

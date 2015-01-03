@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="author" content="Albert Deng">
+
+	    <!-- Bootstrap core CSS -->
+	    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+		<script type='text/javascript' src="../js/jquery.min.js"></script>
+	    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	    <script type="text/javascript" src="../js/bootbox.min.js"></script>
+	    <script type='text/javascript' src='../js/script.js'></script>
+
+	    <link href="../css/dashboard.css" rel="stylesheet">
+
+	    <!-- TODO: Conditionally loaded scripts -->
+	    <script type='text/javascript' src="../js/section-scripts/ch7-120A.js"></script>
+	    <script type='text/javascript' src="../js/libs/presentvalue.js"></script>
+
+	    <title>Accounting Generators</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="../index.html">Accounting Toolbox</a>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li id="discountLi" class="active"><a onclick="showSection('discount');" href="javascript:void(0);">Discounts</a></li>
+							<li id="returnLi"><a onclick="showSection('return');" href="javascript:void(0);">Returns</a></li>
+							<li id="badLi"><a onclick="showSection('bad');" href="javascript:void(0);">Bad Debts</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li><a onclick="logout();" href>Leave Feedback</a></li>
+							<li><a href="#"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+								<input type="hidden" name="cmd" value="_s-xclick">
+								<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+								"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+								<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li class="divider"><h4>Generators</h4></li>
+					<li id="receivableLi" class="active"><a href="javascript:void(0);">Accounts Receivable</a></li>
+					<li id="noteLi"><a href="ch7A-120A.html">Notes Receivable</a></li>
+					<li id="investmentLi"><a href="ch12-120A.html">Equity Investments</a></li>
+					<li id="bondLi"><a href="ch14-120B.html">Debt Securities</a></li>
+					<li id="leaseLi"><a href="ch15-120B.html">Leases</a></li>
+					<li class="divider"><h4>Calculators</h4></li>
+					<li id="pvCalcLi"><a href="../calc/pvCalc.html">Present Value</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="receivableDash" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        	<h1 class="page-header">Accounts Receivable</h1>
+
+        	<!-- Discounts -->
+        	<div class="container section-holder" style="width:auto;" id="discountSection">
+	        	<h3>Sales Discounts</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div id="discountErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="discountErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="discountWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="discountWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="discountPermWarningDiv">
+				</div>
+
+	    		<!-- Original Purchase -->
+    			<div class="row">
+    				<div class="form-group col-md-3">
+	        			<label for="priceDiscount">Sale Amount</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="priceDiscount" placeholder="Enter sales price" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="dateDiscount">Sale Date</label>
+		        		<input type="date" class="form-control" id="dateDiscount" required>
+		        	</div>
+		        	<div class="form-group col-md-6">
+	        			<label for="percDiscount">Credit Terms</label>
+	        			<div class="input-group">
+			        		<input type="number" min='0' max='100' class="form-control" id="percDiscount" required data-toggle="tooltip" title="This is the discount for early payment">
+							<div class="input-group-addon">/</div>
+							<input type="number" min='0' class="form-control" id="firstDDiscount" required data-toggle="tooltip" title="Early payment if paid in this many days">
+							<div class="input-group-addon">n</div>
+							<input type="number" min='0' class="form-control" id="secondDDiscount" required data-toggle="tooltip" title="Rest of the payment due in these many days">
+			        	</div>
+	        			<br />
+	        			<div class="row">
+			        		<div class="col-md-3 col-md-offset-6">
+	        					<button onclick="firstSub();" type="button" class="btn btn-success pull-right">2/10, n/30</button>
+			        		</div>
+	        				<div class="col-md-3">
+			        			<button onclick="discountAddPurchase( priceDiscount.value, dateDiscount.value, percDiscount.value, firstDDiscount.value, secondDDiscount.value );" type="button" class="btn btn-primary pull-right">Add Payment</button>
+			        		</div>
+	        			</div>
+	        		</div><br />
+    			</div>
+
+    			<!-- Collections -->
+    			<div class="row">
+	        		<div class="form-group col-md-6">
+	        			<label for="cashDiscount">Cash Collected</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="cashDiscount" placeholder="Enter total cash received" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="cashDateDiscount">Collection Date</label>
+		        		<input type="date" class="form-control" id="cashDateDiscount" required><br />
+
+		        		<button onclick="discountAddCash( cashDiscount.value, cashDateDiscount.value );" type="button" class="btn btn-primary pull-right">Add Cash Collection</button>
+		        	</div><br />
+		        </div>
+
+    			<div id="discountEntries" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">#</th>
+	        					<th class="text-center">Amount</th>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Existing Balance</th>
+	        					<th class="text-center">Notes</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div>
+	        	<br />
+	        	<button onclick="discountJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="discountContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+	    	</div>
+
+			<!-- Returns -->
+        	<div class="container section-holder" style="width:auto;" id="returnSection" hidden>
+	        	<h3>Returns</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div id="returnErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="returnErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="returnWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="returnWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+
+	    		<!-- Sales -->
+	    		<div class="row">
+	    			<div class="form-group col-md-3">
+	        			<label for="saleReturn">Sale Amount</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="saleReturn" placeholder="Enter total cash received" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="percentReturn">Estimated Percentage Returned</label>
+	        			<div class="input-group">
+			        		<input type="number" min='0' max='100' class="form-control" id="percentReturn" placeholder="Enter return percent" data-toggle="tooltip" title="Enter the estimated percentage of sales that are returned" required>
+							<div class="input-group-addon">%</div>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="cogsReturn">Cost of Goods Sold</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="cogsReturn" placeholder="Enter cost of goods sold" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="dateReturn">Sale Date</label>
+		        		<input type="date" class="form-control" id="dateReturn" required><br />
+
+		        		<button onclick="returnAddSale( saleReturn.value, percentReturn.value, cogsReturn.value, dateReturn.value );" type="button" class="btn btn-primary pull-right">Add Sale</button>
+		        	</div><br />
+	    		</div>
+
+	    		<!-- Actual Returns -->
+	    		<div class="row">
+	        		<div class="form-group col-md-3">
+	        			<label for="saleAmtReturn">Value of Sale Returned</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="saleAmtReturn" placeholder="Enter sales return value" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="invAmtReturn">Value of Inventory Returned</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="invAmtReturn" placeholder="Enter inventory return value" required>
+			        	</div>
+			        	<br />
+			        	<button onclick="returnUseFixed(returnYearReturn.value);" type="button" class="btn btn-success pull-right" id="ratioReturn" data-toggle="tooltip" title="Click this if COGS is a fixed percentage of the sale amount">Use Fixed-Ratio</button>
+	        		</div>
+	        		<div class="form-group col-md-6">
+		        		<label for="returnYearReturn">Year of Sale</label>
+		        		<select class="form-control" id="returnYearReturn">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#returnYearReturn").val("" + d.getFullYear());
+		        			</script>
+		        		</select><br />
+		        		<div class="row">
+		        			<div class="form-group col-md-5 col-md-offset-1">
+				        		<div id="prevCheck" class="checkbox" data-toggle="tooltip" title="Check if these returns are made in the following year (Ex: sale made in 2013, but return made in 2014)">
+									<label>
+										<input type="checkbox" onclick="oldReturn = !oldReturn;">Previously made sale?
+									</label>
+								</div>
+							</div>
+							<div class="form-group col-md-6">
+								<button onclick="returnAddReturn( saleAmtReturn.value, invAmtReturn.value, returnYearReturn.value );" type="button" class="btn btn-primary pull-right">Add Return</button>
+							</div>
+		        		</div>
+		        	</div><br />
+		        </div>
+
+	    		<!-- Adjusting Entries -->
+	    			<!-- Should be automated -->
+
+	    		<div id="returnEntries" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">#</th>
+	        					<th class="text-center">Amount</th>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Existing Balance</th>
+	        					<th class="text-center">Notes</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div>
+	        	<br />
+	        	<button onclick="returnJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="returnContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+	        </div>
+
+	        <div class="container section-holder" style="width:auto;" id="badSection">
+	        	<h3>Bad Debts</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div id="badErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="badErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="badWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="badWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="badPermWarningDiv">
+				</div>
+
+	    		<div class="container" style="width:100%">
+		    		<select class="form-control" id="methodChooser" onchange="chooseMethod(methodChooser.value);">
+		    			<option value="">Please select a method</option>
+		    			<option disabled>----------------------</option>
+		    			<option value="1">Income Statement Approach</option>
+		    			<option value="2">Balance Sheet Approach</option>
+		    			<option value="3">Direct Write-off Approach</option>
+		    		</select>
+		    	</div><br />
+
+		    	<div class="row" id="incomeSection" hidden>
+		    		<div class="form-group col-md-4">
+		    			<label for="incSaleBad">Sales for Year</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="incSaleBad" placeholder="Enter sales made in year" required>
+			        	</div>
+		    		</div>
+		    		<div class="form-group col-md-4">
+		    			<label for="incPercBad">Bad Debt Percentage</label>
+	        			<div class="input-group">
+			        		<input type="number" min='0' max='100' class="form-control" id="incPercBad" placeholder="Enter bad debt percentage" required>
+							<div class="input-group-addon">%</div>
+			        	</div>
+		    		</div>
+		    		<div class="form-group col-md-4">
+		    			<label for="incYearBad">Year</label>
+		        		<select class="form-control" id="incYearBad">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#incYearBad").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        		<br />
+		        		<button onclick="badAddIncExp( incSaleBad.value, incPercBad.value, incYearBad.value );" type="button" class="btn btn-primary pull-right">Add Bad Debt Expense</button>
+		    		</div>
+		    	</div>
+
+		    	<div class="row" id="balanceSection" hidden>
+		    		<div class="form-group col-md-4">
+		    			<label for="balAccBad">Ending Accounts Receivable Balance</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="balAccBad" placeholder="Enter sales made in year" required>
+			        	</div>
+		    		</div>
+		    		<div class="form-group col-md-4">
+		    			<label for="balPercBad">Percentage Estimated to be Uncollectible</label>
+	        			<div class="input-group">
+			        		<input type="number" min='0' max='100' class="form-control" id="balPercBad" placeholder="Enter bad debt percentage" required>
+							<div class="input-group-addon">%</div>
+			        	</div>
+		    		</div>
+		    		<div class="form-group col-md-4">
+		    			<label for="balYearBad">Year</label>
+		        		<select class="form-control" id="balYearBad">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#balYearBad").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        		<br />
+		        		<button onclick="badAddBalExp( balAccBad.value, balPercBad.value, balYearBad.value );" type="button" class="btn btn-primary pull-right">Add Bad Debt Expense</button>
+		    		</div>
+		    	</div>
+
+		    	<div class="row">
+		    		<div class="form-group col-md-6">
+		    			<label for="writeOffBad">Write-Off Amount</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="writeOffBad" placeholder="Enter amount of write-off" required>
+			        	</div>
+		    		</div>
+		    		<div class="form-group col-md-6">
+		        		<label for="wDateBad">Write-off Date</label>
+		        		<input type="date" class="form-control" id="wDateBad" required><br />
+
+		        		<button onclick="badWriteOff( writeOffBad.value, wDateBad.value );" type="button" class="btn btn-primary pull-right">Add Write-Off</button>
+		    		</div>
+		    	</div>
+
+		    	<div class="row">
+		    		<div class="form-group col-md-6">
+		    			<label for="cashBad">Cash Collected From Writen-off Accounts</label>
+	        			<div class="input-group">
+							<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="cashBad" placeholder="Enter amount of cash collected" required>
+			        	</div>
+		    		</div>
+		    		<div class="form-group col-md-6">
+		        		<label for="cDateBad">Cash Collection Date</label>
+		        		<input type="date" class="form-control" id="cDateBad" required><br />
+
+		        		<button onclick="badUndoWriteoff( cashBad.value, cDateBad.value );" type="button" class="btn btn-primary pull-right">Add Cash Collection</button>
+		    		</div>
+		    	</div>
+
+	    		<div id="badEntries" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">#</th>
+	        					<th class="text-center">Amount</th>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Existing Balance</th>
+	        					<th class="text-center">Notes</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div>
+	        	<br />
+	        	<button onclick="badJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="badContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+
+	    	</div>
+	    	<!-- /.row -->
+
+	        <hr>
+
+	        <!-- Footer -->
+	        <footer>
+	            <div class="row">
+	                <div class="col-lg-12">
+	                    <p>Copyright &copy; Albert Deng 2014</p>
+	                </div>
+	            </div>
+	        </footer>
+	    </div>
+
+		<!-- Viewport size detectors -->
+        <div class="device-xs visible-xs"></div>
+		<div class="device-sm visible-sm"></div>
+		<div class="device-md visible-md"></div>
+		<div class="device-lg visible-lg"></div>
+	</body>
+</html>

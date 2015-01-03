@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="author" content="Albert Deng">
+
+	    <!-- Bootstrap core CSS -->
+	    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+		<script type='text/javascript' src="js/jquery.min.js"></script>
+	    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+	    <script type='text/javascript' src='js/script.js'></script>
+
+	    <link href="css/dashboard.css" rel="stylesheet">
+
+	    <!-- TODO: Conditionally loaded scripts -->
+	    <script type='text/javascript' src="js/section-scripts/inventory.js"></script>
+
+	    <title>Accounting Generators</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="#">Accounts Generatable</a>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav navbar-right">
+							<li><a onclick="logout();" href>Leave Feedback</a></li>
+							<li><a onclick="logout();" href>Donate</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li class="divider"><h4>MGMT 1A</h4></li>
+					<li id="inventoryLi" class="active"><a onclick="navToPage('inventoryDash');" href="javascript:void(0);">Inventory Cycle</a></li>
+					<li id="referenceLi"><a onclick="navToPage('referenceDash');" href="javascript:void(0);">Journal Entry Reference</a></li>
+					<li class="divider"><h4>MGMT 120A</h4></li>
+					<li id="receivableLi"><a href="gen/ch7-120A.html">Accounts Receivable</a></li>
+					<li id="investmentLi"><a href="gen/ch12-120A.html">Equity Investments</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="inventoryDash" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        	<h1 class="page-header">Inventory Cycle</h1>
+        	<div class="container" style="width:auto;">
+        		<!-- Purchase of Inventory -->
+	        	<h3>Purchase of Inventory</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div class="container" style="width:auto;">
+		        	<label for="invSelect">Select Asset used for Purchase:</label>
+		        	<select id="invSelect">
+		        		<option value="Cash">Cash</option>
+		        		<option value="Accounts Payable">Accounts Payable</option>
+		        		<option value="Other">Other Assets</option>
+		        	</select><br />
+
+		        	<label for="invSelect">Select Purchase Method:</label>
+		        	<select id="invSelect">
+		        		<option value="Units">Number of Units</option>
+		        		<option value="Price">Total Purchase Price</option>
+		        	</select><br />
+
+		        	<br />
+		        	<button class="btn btn-primary" type="button">Submit</button>
+		        	<hr>
+		        	<div class="journal-entry" id="invJE">
+		        	</div>
+		        </div>
+
+	        	<h3>Sale of Inventory</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        </div>
+        </div>	
+
+        <div id="referenceDash" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" style="display:none">
+        	<h1 class="page-header">Journal Entry Reference</h1>
+        </div>	
+	    <!-- Apparently javascript placed at the end makes the page load faster -->
+	</body>
+</html>

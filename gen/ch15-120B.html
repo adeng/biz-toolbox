@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="author" content="Albert Deng">
+
+	    <!-- Bootstrap core CSS -->
+	    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+		<script type='text/javascript' src="../js/jquery.min.js"></script>
+	    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	    <script type="text/javascript" src="../js/bootbox.min.js"></script>
+	    <script type='text/javascript' src='../js/script.js'></script>
+
+	    <link href="../css/dashboard.css" rel="stylesheet">
+
+	    <!-- TODO: Conditionally loaded scripts -->
+	    <script type='text/javascript' src="../js/section-scripts/ch15-120B.js"></script>
+	    <script type='text/javascript' src="../js/libs/presentvalue.js"></script>
+
+	    <title>Accounting Generators</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="../index.html">Accounting Toolbox</a>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li id="opLi" class="active"><a onclick="showSection('op');" href="javascript:void(0);">Operating</a></li>
+							<li id="capLi"><a onclick="showSection('cap');" href="javascript:void(0);">Capital Lease</a></li>
+							<li id="lbackLi"><a onclick="showSection('lback');" href="javascript:void(0);">Sale-Leaseback</a></li>
+							<li id="directLi"><a onclick="showSection('direct');" href="javascript:void(0);">Direct-Financing</a></li>
+							<li id="saleLi"><a onclick="showSection('sale');" href="javascript:void(0);">Sales-Type</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li><a onclick="logout();" href>Leave Feedback</a></li>
+							<li><a href="#"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+								<input type="hidden" name="cmd" value="_s-xclick">
+								<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+								"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+								<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li class="divider"><h4>Generators</h4></li>
+					<li id="receivableLi"><a href="ch7-120A.html">Accounts Receivable</a></li>
+					<li id="noteLi"><a href="ch7A-120A.html">Notes Receivable</a></li>
+					<li id="investmentLi"><a href="ch12-120A.html">Equity Investments</a></li>
+					<li id="bondLi"><a href="ch14-120B.html">Debt Securities</a></li>
+					<li id="leaseLi" class="active"><a href="javascript:void(0);">Leases</a></li>
+					<li class="divider"><h4>Calculators</h4></li>
+					<li id="pvCalcLi"><a href="../calc/pvCalc.html">Present Value</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="leaseDash" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        	<h1 class="page-header">Leases</h1>
+        	<div class="container section-holder" style="width:auto;" id="opSection">
+	        	<h3>Operating Leases</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div id="opErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="opErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="opWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="opWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+
+	    		<div class="row">
+		        	<div class="form-group col-md-3">
+		        		<label for="payOp">Payment Amount</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="payOp" placeholder="Enter amount of payment" required>
+			        	</div>
+		        	</div>
+					<div class="form-group col-md-3">
+		        		<label for="numOp">Number of Payments</label>
+		        		<input type="number" min='0' class="form-control" id="numOp" placeholder="Enter number of payments" required>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="issueOp">Payment Date</label>
+		        		<select id="issueOp" class="form-control">
+		        			<option value="beg">Beginning of Year</option>
+		        			<option value="end">End of Year</option>
+		        		</select>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="yearOp">Year</label>
+		        		<select class="form-control" id="yearOp">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#yearOp").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        	</div>
+		        	<br />
+	        	</div>
+	        	<div class="checkbox">
+					<label>
+						<input onchange="isLessor = !isLessor; isLessor ? $('#lessorOp').show() : $('#lessorOp').hide()" id="deprEquity" type="checkbox"> Are you the lessor?
+					</label>
+				</div>
+				<div class="row" id="lessorOp" hidden>
+		        	<div class="form-group col-md-4">
+		        		<label for="valueOp">Asset Value</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="valueOp" placeholder="Enter the asset's value" required>
+			        	</div>
+		        	</div>
+					<div class="form-group col-md-4">
+		        		<label for="lifeOp">Useful Life</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="lifeOp" placeholder="Enter the useful life" required>
+			        		<div class="input-group-addon">years</div>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-4">
+		        		<label for="costsOp">Initial Direct Costs</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="costsOp" data-toggle="tooltip" title="These costs include costs for negotiation and origination" placeholder="Enter initial direct costs" required>
+			        	</div>
+		        	</div>
+	        	</div>
+	        	<div class="row">
+	        		<div class="form-group col-md-12">
+		        		<button onclick="(isLessor) ? opAddLeaseLessor(payOp.value, numOp.value, issueOp.value, yearOp.value, valueOp.value, lifeOp.value, costsOp.value) : opAddLeaseLessee(payOp.value, numOp.value, issueOp.value, yearOp.value);" type="button" class="btn btn-primary pull-right">Add Lease</button>
+		        	</div>
+		        </div>
+
+		        <div id="opEntries" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">#</th>
+	        					<th class="text-center">Amount</th>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Existing Balance</th>
+	        					<th class="text-center">Notes</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div>
+	        	<br />
+	        	<button onclick="opJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="opContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+	    	</div>
+
+	    	<div class="container section-holder" style="width:auto;" id="capSection" hidden>
+	        	<h3>Capital Leases</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div class="alert alert-info alert-dismissable" role="alert">
+	        		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        		<p><b>Note:</b> This section is intended for the lessee only; see direct-financing or sales-type for lessor</p>
+	        	</div>
+	        	<div id="capErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="capErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="capWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="capWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+
+	    		<div class="row">
+					<div class="form-group col-md-3">
+						<div class="checkbox">
+							<label>
+								<input onchange="capBPO = !capBPO; capBPO ? $('#bpoCapBox').css('visibility','visible') : $('#bpoCapBox').css('visibility', 'hidden'); capDisabler()" id="bpoCheck" type="checkbox"> Bargain Purchase Option?
+							</label>
+						</div>
+					</div>
+					<div class="form-group col-md-3">
+						<div class="checkbox">
+							<label>
+								<input onchange="autoCap = !autoCap; capDisabler();" data-toggle="tooltip" title="Check this for automatic payment/value calculation" id="autoAsset" type="checkbox" checked> Asset value = PV of minimum lease payments?
+							</label>
+						</div>
+					</div>
+					<div class="form-group col-md-6" style="visibility:hidden;" id="bpoCapBox">
+	        			<label for="bpoCap">Bargain Purchase Option Amount</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' onchange="capDisabler()" class="form-control" id="bpoCap" placeholder="Enter BPO Amount" required>
+			        	</div>
+	        		</div>
+				</div>
+	    		<div class="row">
+					<div class="form-group col-md-3">
+		        		<label for="numCap">Number of Payments</label>
+		        		<input type="number" min='0' class="form-control" id="numCap" onchange="capDisabler()" placeholder="Enter payment number" required>
+		        	</div>
+		        	<div class="form-group col-md-3">
+	        			<label for="rateCap">Discount Rate</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' max='100' data-toggle="tooltip" title="If both the incremental borrowing rate and the lessor's rate are known, use the SMALLER rate" class="form-control" id="rateCap" placeholder="Enter discount rate" onchange="capDisabler()" required>
+			        		<div class="input-group-addon">%</div>
+			        	</div>
+	        		</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="payCap">Payment Amount</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="payCap" onchange="capDisabler()" placeholder="Enter payment amount" required disabled>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+	        			<label for="valueCap">Asset Value</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="valueCap" onchange="capDisabler()" placeholder="Enter asset value" required disabled>
+			        	</div>
+	        		</div><br />
+	        	</div>
+	        	<div class="row">
+	        		<div class="form-group col-md-3">
+	        			<label for="ordinaryCap">Is a down payment made?</label>
+	        			<select class="form-control" id="ordinaryCap" onchange="capDisabler()">
+	        				<option value="true">Yes (most common)</option>
+	        				<option value="false">No</option>
+	        			</select>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="lifeCap">Useful Life</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="lifeCap" placeholder="Enter asset value" required>
+			        		<div class="input-group-addon">years</div>
+			        	</div>
+		        	</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="issueCap">Issue Date</label>
+		        		<select class="form-control" id="issueCap">
+		        			<option value="beg">Beginning of Year</option>
+		        			<option value="end">End of Year</option>
+		        		</select>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="yearCap">Year</label>
+		        		<select class="form-control" id="yearCap">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#yearCap").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        	</div>
+	        	</div>
+				<div class="row">
+	        		<div class="form-group col-md-12">
+		        		<button onclick="checkIfCapitalLease(numCap.value, rateCap.value, payCap.value, valueCap.value, ordinaryCap.value == 'false', lifeCap.value, issueCap.value, yearCap.value, bpoCap.value);" type="button" class="btn btn-primary pull-right">Add Lease</button>
+		        	</div>
+		        </div><br />
+
+	    		<div id="capTable" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Cash</th>
+	        					<th class="text-center">Interest</th>
+	        					<th class="text-center">Principal</th>
+	        					<th class="text-center">Carrying Value</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div><br />
+
+	        	<br />
+	        	<button onclick="capJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="capContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+	        </div>
+
+	        <div class="container section-holder" style="width:auto;" id="lbackSection" hidden>
+	        	<h3>Sale-Leaseback Lease</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div class="alert alert-info alert-dismissable" role="alert">
+	        		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        		<p><b>Note:</b> Sale-Leaseback leases are lessee only; the lessor would record a purchase and a direct-financing lease on its books. <br /><br/>
+	        		If the lease is operating instead of capital, amortize the deferred gain against rent expense instead of depreciation.</p>
+	        	</div>
+	        	<div id="lbackErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="lbackErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="lbackWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="lbackWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+
+		    	<div class="row">
+					<div class="form-group col-md-3">
+		        		<label for="numLback">Number of Payments</label>
+		        		<input type="number" min='0' class="form-control" id="numLback" placeholder="Enter number of payments" required>
+		        	</div>
+		        	<div class="form-group col-md-3">
+	        			<label for="rateLback">Discount Rate</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' max='100' class="form-control" id="rateLback" placeholder="Enter discount rate" required>
+			        		<div class="input-group-addon">%</div>
+			        	</div>
+	        		</div>
+		        	<div class="form-group col-md-3">
+	        			<label for="valueLback">Asset Value</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="valueLback" data-toggle="tooltip" title="Enter the original cost; do not include depreciation" placeholder="Enter asset value" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="deprLback">Accumulated Depreciation</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="deprLback"placeholder="Enter accumulated depreciation" required>
+			        	</div>
+	        		</div><br />
+	        	</div>
+	        	<div class="row">
+	        		<div class="form-group col-md-3">
+	        			<label for="saleLback">Sale Price</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="saleLback" placeholder="Enter sale price" required>
+			        	</div>
+	        		</div>
+	        		<div class="form-group col-md-3">
+	        			<label for="lifeLback">Remaining Useful Life</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' class="form-control" id="lifeLback" data-toggle="tooltip" title="Note that this is the REMAINING useful life, subtract the years that have already passed from the useful life" placeholder="Enter useful life" required>
+			        		<div class="input-group-addon">years</div>
+			        	</div>
+		        	</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="issueLback">Issue Date</label>
+		        		<select class="form-control" id="issueLback">
+		        			<option value="beg">Beginning of Year</option>
+		        			<option value="end">End of Year</option>
+		        		</select>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="yearLback">Year</label>
+		        		<select class="form-control" id="yearLback">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#yearLback").val("" + d.getFullYear());
+		        			</script>
+		        		</select><br />
+
+		        		<button onclick="lbackAddLease( numLback.value, rateLback.value, valueLback.value, deprLback.value, saleLback.value, lifeLback.value, issueLback.value, yearLback.value );" type="button" class="btn btn-primary pull-right">Add Lease</button>
+		        	</div>
+	        	</div>
+
+		    	<div id="lbackTable" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Cash</th>
+	        					<th class="text-center">Interest</th>
+	        					<th class="text-center">Principal</th>
+	        					<th class="text-center">Carrying Value</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div><br />
+
+	        	<br />
+	        	<button onclick="lbackJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="lbackContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+		    </div>
+
+		    <div class="container section-holder" style="width:auto;" id="directSection" hidden>
+	        	<h3>Direct-Financing Lease</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div class="alert alert-info alert-dismissable" role="alert">
+	        		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        		<p><b>Note:</b> Direct-financing leases are lessor only.<br /><br />Any initial direct costs will increase the lease receivable balance and correspondingly decrease the effective interest rate. These costs are then amortized along with the rest of the lease over the lease term. The application will automatically factor these in to its calculations.</p>
+	        	</div>
+	        	<div id="directErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="directErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="directWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="directWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+
+	    		<div class="row">
+					<div class="form-group col-md-3">
+						<div class="checkbox">
+							<label>
+								<input onchange="directBPO = !directBPO; directBPO ? $('#bpoDirectBox').css('visibility','visible') : $('#bpoDirectBox').css('visibility', 'hidden'); directDisabler();" id="bpoDirectCheck" type="checkbox"> Bargain Purchase Option?
+							</label>
+						</div>
+					</div>
+					<div class="form-group col-md-6 col-md-offset-3" style="visibility:hidden;" id="bpoDirectBox">
+	        			<label for="bpoDirect">Bargain Purchase Option Amount</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0'class="form-control" id="bpoDirect" onchange="directDisabler()" placeholder="Enter BPO Amount" required>
+			        	</div>
+	        		</div>
+				</div>
+	    		<div class="row">
+					<div class="form-group col-md-3">
+		        		<label for="numDirect">Number of Payments</label>
+		        		<input type="number" min='0' class="form-control" onchange="directDisabler()" id="numDirect" placeholder="Enter payment number" required>
+		        	</div>
+		        	<div class="form-group col-md-3">
+	        			<label for="rateDirect">Discount Rate</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' max='100' data-toggle="tooltip" title="If both the incremental borrowing rate and the lessor's rate are known, use the SMALLER rate" class="form-control" onchange="directDisabler()" id="rateDirect" placeholder="Enter discount rate" required>
+			        		<div class="input-group-addon">%</div>
+			        	</div>
+	        		</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="payDirect">Payment Amount</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" onchange="directDisabler()" id="payDirect" placeholder="Enter payment amount" required disabled>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="valueDirect">Asset Value</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" onchange="directDisabler()" id="valueDirect" placeholder="Enter value of asset" required disabled>
+			        	</div>
+		        	</div><br />
+	        	</div>
+	        	<div class="row">
+	        		<div class="form-group col-md-3">
+	        			<label for="ordinaryDirect">Is a down payment made?</label>
+	        			<select class="form-control" id="ordinaryDirect" onchange="directDisabler()">
+	        				<option value="true">Yes (most common)</option>
+	        				<option value="false">No</option>
+	        			</select>
+	        		</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="directDirect">Initial Direct Costs</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" data-toggle="tooltip" title="These costs include costs for negotiation and origination" id="directDirect" placeholder="Enter direct costs" required>
+			        	</div>
+		        	</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="issueDirect">Issue Date</label>
+		        		<select class="form-control" id="issueDirect">
+		        			<option value="beg">Beginning of Year</option>
+		        			<option value="end">End of Year</option>
+		        		</select>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="yearDirect">Year</label>
+		        		<select class="form-control" id="yearDirect">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#yearDirect").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        	</div>
+	        	</div>
+				<div class="row">
+	        		<div class="form-group col-md-12">
+		        		<button onclick="directAddLease(numDirect.value, rateDirect.value, payDirect.value, valueDirect.value, ordinaryDirect.value == 'false', issueDirect.value, yearDirect.value, parseInt(bpoDirect.value), directDirect.value);" type="button" class="btn btn-primary pull-right">Add Lease</button>
+		        	</div>
+		        </div><br />
+
+	    		<div id="directTable" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Cash</th>
+	        					<th class="text-center">Interest</th>
+	        					<th class="text-center">Principal</th>
+	        					<th class="text-center">Carrying Value</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div><br />
+	        	<br />
+	        	<button onclick="directJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="directContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+		    </div>
+
+		    <div class="container section-holder" style="width:auto;" id="saleSection" hidden>
+	        	<h3>Sales-Type Lease</h3><hr style="margin-top:10px; margin-bottom:10px;">
+	        	<div class="alert alert-info alert-dismissable" role="alert">
+	        		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        		<p><b>Note:</b> Sales-type leases are lessor only.</p>
+	        	</div>
+	        	<div id="saleErrorDiv" class="alert alert-danger" hidden>
+	    			<p><b>Error:</b> <span id="saleErrorText">Incorrect username and/or password</span></p>
+	    		</div>
+	    		<div id="saleWarningDiv" class="alert alert-warning" hidden>
+	    			<p><b>Warning:</b> <span id="saleWarningText">Incorrect username and/or password</span></p>
+	    		</div>
+
+	    		<div class="row">
+					<div class="form-group col-md-3">
+						<div class="checkbox">
+							<label>
+								<input onchange="saleBPO = !saleBPO; saleBPO ? $('#bpoSaleBox').css('visibility','visible') : $('#bpoSaleBox').css('visibility', 'hidden');" id="bposaleCheck" type="checkbox"> Bargain Purchase Option?
+							</label>
+						</div>
+					</div>
+					<div class="form-group col-md-6 col-md-offset-3" style="visibility:hidden;" id="bpoSaleBox">
+	        			<label for="bpoSale">Bargain Purchase Option Amount</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0'class="form-control" id="bpoSale" placeholder="Enter BPO Amount" required>
+			        	</div>
+	        		</div>
+				</div>
+	    		<div class="row">
+					<div class="form-group col-md-3">
+		        		<label for="numSale">Number of Payments</label>
+		        		<input type="number" min='0' class="form-control" id="numSale" placeholder="Enter payment number" required>
+		        	</div>
+		        	<div class="form-group col-md-3">
+	        			<label for="rateSale">Discount Rate</label>
+		        		<div class="input-group">
+			        		<input type="number" min='0' max='100' data-toggle="tooltip" title="If both the incremental borrowing rate and the lessor's rate are known, use the SMALLER rate" class="form-control" id="rateSale" placeholder="Enter discount rate" required>
+			        		<div class="input-group-addon">%</div>
+			        	</div>
+	        		</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="paySale">Payment Amount</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="paySale" placeholder="Enter payment amount" required>
+			        	</div>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="valueSale">Asset Value</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" id="valueSale" placeholder="Enter value of asset" required>
+			        	</div>
+		        	</div><br />
+	        	</div>
+	        	<div class="row">
+	        		<div class="form-group col-md-3">
+	        			<label for="ordinarySale">Is a down payment made?</label>
+	        			<select class="form-control" id="ordinarySale">
+	        				<option value="true">Yes (most common)</option>
+	        				<option value="false">No</option>
+	        			</select>
+	        		</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="directSale">Initial Direct Costs</label>
+		        		<div class="input-group">
+			        		<div class="input-group-addon">$</div>
+			        		<input type="number" min='0' class="form-control" data-toggle="tooltip" title="These costs include costs for negotiation and origination" id="directSale" placeholder="Enter sale costs" required>
+			        	</div>
+		        	</div>
+	        		<div class="form-group col-md-3">
+		        		<label for="issueSale">Issue Date</label>
+		        		<select class="form-control" id="issueSale">
+		        			<option value="beg">Beginning of Year</option>
+		        			<option value="end">End of Year</option>
+		        		</select>
+		        	</div>
+		        	<div class="form-group col-md-3">
+		        		<label for="yearSale">Year</label>
+		        		<select class="form-control" id="yearSale">
+		        			<script>
+		        				var d = new Date( $.now() );
+		        				for ( var i = d.getFullYear() - 30; i < d.getFullYear() + 30; i++ )
+		        				{
+		        					document.write('<option value="' + i + '">' + i + '</option>');
+		        				}
+		        				$("#yearSale").val("" + d.getFullYear());
+		        			</script>
+		        		</select>
+		        	</div>
+	        	</div>
+				<div class="row">
+	        		<div class="form-group col-md-12">
+		        		<button onclick="saleAddLease(numSale.value, rateSale.value, paySale.value, valueSale.value, ordinarySale.value == 'false', issueSale.value, yearSale.value, parseInt(bpoSale.value), directSale.value);" type="button" class="btn btn-primary pull-right">Add Lease</button>
+		        	</div>
+		        </div><br />
+
+	    		<div id="saleTable" class="table text-center">
+	        		<table class="table table-hover">
+	        			<thead>
+	        				<tr>
+	        					<th class="text-center">Date</th>
+	        					<th class="text-center">Cash</th>
+	        					<th class="text-center">Interest</th>
+	        					<th class="text-center">Principal</th>
+	        					<th class="text-center">Carrying Value</th>
+	        				</tr>
+	        			</thead>
+	        			<tbody>
+	        			</tbody>
+	        		</table>
+	        	</div><br />
+	        	<br />
+	        	<button onclick="saleJEGeneration();" type="button" class="btn btn-primary pull-right">Generate Entries</button>
+	        	<br />
+	        	<div id="saleContainer" class="container" style="width: auto">
+	        	
+	        	</div>
+		    </div>
+
+			<!-- /.row -->
+
+	        <hr>
+
+	        <!-- Footer -->
+	        <footer>
+	            <div class="row">
+	                <div class="col-lg-12">
+	                    <p>Copyright &copy; Albert Deng 2014</p>
+	                </div>
+	            </div>
+	        </footer>
+		</div>
+
+        <!-- Viewport size detectors -->
+        <div class="device-xs visible-xs"></div>
+		<div class="device-sm visible-sm"></div>
+		<div class="device-md visible-md"></div>
+		<div class="device-lg visible-lg"></div>
+    </body>
+</html>
