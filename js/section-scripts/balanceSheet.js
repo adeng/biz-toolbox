@@ -1,8 +1,5 @@
-var data;
-
 function genBalanceSheet( statementArray ) {
-	$("#balanceSheetTable").remove();
-	data = statementArray;
+	$("#loading").remove();
 	var tableString = "";
 	// Generate header
 	tableString += '<table id="balanceSheetTable" class="table table-hover">' +
