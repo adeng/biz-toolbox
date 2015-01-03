@@ -43,6 +43,7 @@
 						<ul class="nav navbar-nav">
 							<li id="bsLi" class="active"><a onclick="showSection('bs');" href="javascript:void(0);">Balance Sheet Scraper</a></li>
 							<li id="icLi"><a onclick="showSection('ic');" href="javascript:void(0);">Income Statement Scraper</a></li>
+							<li id="cfLi"><a onclick="showSection('cf');" href="javascript:void(0);">Cash Flows Scraper</a></li>
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li><a href="../sendFeedback.html">Leave Feedback</a></li>
@@ -91,6 +92,7 @@
     			
 	        </div>
 
+	        <!-- Income Statement -->
 	        <div class="container section-holder" style="width:auto;" id="icSection" hidden>
 	        	<h3>Income Statement Scraper</h3><hr style="margin-top:10px; margin-bottom:10px;">
     			<label for="quote">Enter stock ticker symbol: </label>
@@ -104,7 +106,19 @@
     			<br />
 	        </div>
 
-	        <!-- Income Statement -->
+	        <!-- Cash Flow Statement -->
+	        <div class="container section-holder" style="width:auto;" id="cfSection" hidden>
+	        	<h3>Statement of Cash Flows Scraper</h3><hr style="margin-top:10px; margin-bottom:10px;">
+    			<label for="quote">Enter stock ticker symbol: </label>
+	        	<div class="input-group">
+    				<input type="text" class="form-control" placeholder="Enter stock quote..." id="quoteCF">
+    				<span class="input-group-btn">
+    					<button class="btn btn-primary" type="button" id="icGet" onclick="getCashFlows( quoteCF.value, 0, 'cf' );">Get Cash Flows Statement</button>
+    				</span>
+    			</div>
+
+    			<br />
+	        </div>
 
 	        <hr>
 

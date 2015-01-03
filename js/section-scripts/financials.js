@@ -3,7 +3,7 @@ function genBalanceSheet( statementArray ) {
 	var tableString = "";
 	var current = false;
 	// Generate header
-	tableString += '<h4 id="balanceHeader">Balance Sheet for ' + quote.value + '</h4>';
+	tableString += '<h4 id="balanceHeader">Balance Sheet for ' + quoteBS.value + '</h4>';
 
 	tableString += '<table id="balanceSheetTable" class="table table-hover">' +
     					'<thead><tr>' +
@@ -132,4 +132,77 @@ function genIncomeStatement( statementArray ) {
     tableString += '</tbody></table>';
 
     $("#icSection").append( tableString );
+}
+
+function genCashFlows( statementArray ) {
+	$("#loading").remove();
+	var tableString = "";
+	var current = false;
+	// Generate header
+	tableString += '<h4 id="cashHeader">Statement of Cash Flows for ' + quoteCF.value + '</h4>';
+
+	tableString += '<table id="cashFlowsTable" class="table table-hover">' +
+    					'<thead><tr>' +
+    						'<th class="text-center"></th>' +
+    						'<th></th>' +
+    						'<th></th>' +
+    						'<th class="text-right">' + statementArray[0]['period'] + '</th>' +
+    						'<th class="text-right">' + statementArray[1]['period'] + '</th>' +
+    						'<th class="text-right">' + statementArray[2]['period'] + '</th>' +
+    					'</tr></thead><tbody>';
+
+    // Generate rest
+
+   	// Generate OPActivities
+   	tableString += '<tr><td><b>Cash from Operating Activities</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+   	for( var i = 0; i < Object.keys( statementArray[0] ).length; i++ )
+	{
+		var asset = Object.keys( statementArray[0] )[i];
+		var display = asset;
+		if( asset == "period" )
+			continue;
+
+		tableString += '<tr>';
+		tableString += '<td>&nbsp;&nbsp;&nbsp;';
+
+		if( asset.indexOf( "Total" ) != -1 )
+			tableString += '&nbsp;&nbsp;&nbsp;<b>';
+
+		if( asset == "TotalCashFlowFromOperatingActivities" )
+			tableString += "Total Cash Flows From Operating Activities";
+		else if( asset == "OtherCashflowsfromInvestingActivities" )
+			tableString += "Other Cash Flows From Investing Activities";
+		else if( asset == "SalePurchaseofStock" )
+			tableString += "Proceeds from Sale or Purchase of Stock";
+		else if( asset == "OtherCashFlowsfromFinancingActivities" )
+			tableString += "Other Cash Flows From Financing Activities";
+		else if( asset == "ChangeInCashandCashEquivalents" )
+			tableString += "Net Change in Cash and Cash Equivalents";
+		else
+			tableString += unCamel( display );
+
+		if( asset.indexOf( "Total" ) != -1 )
+			tableString += '</b>';
+
+		tableString += '</td>';
+		tableString += '<td></td>';
+		tableString += '<td></td>';
+		tableString += '<td class="text-right">' + ( statementArray[0][asset]['content'] == "-" ? "-" : accountify( parseInt( statementArray[0][asset]['content'] ), "" ) ) + '</td>';
+		tableString += '<td class="text-right">' + ( statementArray[1][asset]['content'] == "-" ? "-" : accountify( parseInt( statementArray[1][asset]['content'] ), "" ) ) + '</td>';
+		tableString += '<td class="text-right">' + ( statementArray[2][asset]['content'] == "-" ? "-" : accountify( parseInt( statementArray[2][asset]['content'] ), "" ) ) + '</td>';
+
+		tableString += '</tr>';
+
+		if( asset == "TotalCashFlowFromOperatingActivities" )
+			tableString += '<tr><td><b>Cash From Investing Activities</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+		if( asset == "TotalCashFlowsFromInvestingActivities" )
+			tableString += '<tr><td><b>Cash From Financing Activities</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+	}
+
+    // ....annnnnd Fin :D
+    tableString += '</tbody></table>';
+
+    $("#cfSection").append( tableString );
 }
