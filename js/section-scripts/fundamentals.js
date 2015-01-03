@@ -79,7 +79,7 @@ function genRatios( statementArray ) {
     // Last header
     tableString += '<tr><td><b>Profitability Ratios</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
-    profitMarginArray = [ parseFloat(profitMargin( savedInfo[0][2], savedInfo[0][3] )), parseFloat(profitMargin( savedInfo[1][2], savedInfo[1][3] )), parseFloat(profitMargin( savedInfo[2][2], savedInfo[2][3] ))];
+    profitMarginArray = [ parseInt(profitMargin( savedInfo[0][2], savedInfo[0][3] )), parseInt(profitMargin( savedInfo[1][2], savedInfo[1][3] )), parseInt(profitMargin( savedInfo[2][2], savedInfo[2][3] ))];
 
     // Generate Profit Margin
     tableString += '<tr ' + rowStyle( profitMarginArray ) + '>';
@@ -115,6 +115,7 @@ function genRatios( statementArray ) {
     tableString += '</tbody></table>';
 
     $("#raSection").append( tableString );
+    $("#raSection").append( "<br />" + writeReport() );
 
 }
 
@@ -232,4 +233,37 @@ function increasingArray( arr )
 function decreasingArray( arr )
 {
     return arr[0] < arr[1] && arr[1] < arr[2];
+}
+
+// Essay functions
+
+function writeReport()
+{
+    var sigDiff = 5;
+    var rpt = "<div id='analysis'><h4>Analysis\n</h4><p>";
+    rpt += "<b>Profit Margin: </b>";
+    rpt += "The profit margin has ";
+
+    if( profitMarginArray[0] > profitMarginArray[1] )
+        rpt += "increased ";
+    else if( profitMarginArray[1] > profitMarginArray[0] )
+        rpt += "decreased ";
+    else
+        rpt + "not changed significantly ";
+
+    rpt += "in the last year";
+
+    if( increasingArray( profitMarginArray ))
+        rpt += ", and is part of an increasing trend. This is indicative of two possibilities: 1) expenses have fallen relative to sales, or 2) the business is selling products at a higher price without a corresponding increase in costs. Either way, this is good news!";
+    else if( decreasingArray( profitMarginArray ))
+        rpt += ", and is part of a decreasing trend. This is indicative of two possibilities: 1) costs are increasing, or 2) products are selling at a lower price than before. This is not good news.";
+    else {
+        if( Math.abs( profitMarginArray[0] - profitMarginArray[1] ) > sigDiff )
+            rpt += ". This is a significant change from the prior year; it may be worth taking a closer look to see what caused this.";
+        else
+            rpt += ". This is not a significant change, and is not indicative of any major trend.";
+    }
+
+    rpt += "</p></div>";
+    return rpt;
 }
