@@ -6,6 +6,7 @@ function genRatios( statementArray ) {
 
 	// Generate header
 	tableString += '<h4 id="balanceHeader">Ratios for ' + quoteBS.value + '</h4>';
+    $("#quoteBS").val("");
 
 	tableString += '<table id="balanceSheetTable" class="table table-hover">' +
     					'<thead><tr>' +
@@ -22,7 +23,7 @@ function genRatios( statementArray ) {
 
     // Generate current ratio
     tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Current Ratio</td>';
+    tableString += '<td class="ratio-li">Current Ratio</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
     tableString += '<td class="text-right">' + currentRatio( statementArray[0]['TotalCurrentAssets']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] ) + '</td>';
@@ -32,7 +33,7 @@ function genRatios( statementArray ) {
 
     // Generate quick ratio
     tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Quick Ratio</td>';
+    tableString += '<td class="ratio-li">Quick Ratio</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
     tableString += '<td class="text-right">' + quickRatio( statementArray[0]['CashAndCashEquivalents']['content'], statementArray[0]['ShortTermInvestments']['content'], statementArray[0]['NetReceivables']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] ) + '</td>';
@@ -45,7 +46,7 @@ function genRatios( statementArray ) {
 
     // Generate debt-equity ratio
     tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;LT Debt-Equity Ratio</td>';
+    tableString += '<td class="ratio-li">LT Debt-Equity Ratio</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
     tableString += '<td class="text-right">' + debtEquityRatio( statementArray[0]['LongTermDebt']['content'], statementArray[0]['Short_CurrentLongTermDebt']['content'], statementArray[0]['TotalStockholderEquity']['content'] ) + '</td>';
@@ -58,7 +59,7 @@ function genRatios( statementArray ) {
 
     // Generate days-sales in inventory
     tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Days Sales in Inventory</td>';
+    tableString += '<td class="ratio-li">Days Sales in Inventory</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
     tableString += '<td class="text-right">' + daysSalesRatio( statementArray[0]['Inventory']['content'], savedInfo[0][1], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
@@ -68,7 +69,7 @@ function genRatios( statementArray ) {
 
     // Generate days-sales outstanding
     tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Days Sales Outstanding</td>';
+    tableString += '<td class="ratio-li">Days Sales Outstanding</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
     tableString += '<td class="text-right">' + daysSalesOut( statementArray[0]['NetReceivables']['content'], savedInfo[0][0], statementArray[0]['period'], statementArray[1]['period'] ) + '</td>';
@@ -79,21 +80,45 @@ function genRatios( statementArray ) {
     // Last header
     tableString += '<tr><td><b>Profitability Ratios</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
-    profitMarginArray = [ parseInt(profitMargin( savedInfo[0][2], savedInfo[0][3] )), parseInt(profitMargin( savedInfo[1][2], savedInfo[1][3] )), parseInt(profitMargin( savedInfo[2][2], savedInfo[2][3] ))];
+    profitMarginArray = [ parseInt(profitMargin( savedInfo[0][0], savedInfo[0][3] )), parseInt(profitMargin( savedInfo[1][0], savedInfo[1][3] )), parseInt(profitMargin( savedInfo[2][0], savedInfo[2][3] ))];
 
     // Generate Profit Margin
     tableString += '<tr ' + rowStyle( profitMarginArray ) + '>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Profit Margin</td>';
+    tableString += '<td class="ratio-li">Profit Margin</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
-    tableString += '<td class="text-right">' + profitMargin( savedInfo[0][2], savedInfo[0][3] ) + '</td>';
-    tableString += '<td class="text-right">' + profitMargin( savedInfo[1][2], savedInfo[1][3] ) + '</td>';
-    tableString += '<td class="text-right">' + profitMargin( savedInfo[2][2], savedInfo[2][3] ) + '</td>';
+    tableString += '<td class="text-right">' + profitMargin( savedInfo[0][0], savedInfo[0][3] ) + '</td>';
+    tableString += '<td class="text-right">' + profitMargin( savedInfo[1][0], savedInfo[1][3] ) + '</td>';
+    tableString += '<td class="text-right">' + profitMargin( savedInfo[2][0], savedInfo[2][3] ) + '</td>';
+    tableString += '</tr>';
+
+    grossProfitArray = [ parseInt( grossProfit( savedInfo[0][0], savedInfo[0][1] )), parseInt( grossProfit( savedInfo[1][0], savedInfo[1][1] )), parseInt( grossProfit( savedInfo[2][0], savedInfo[2][1] ))];
+
+    // Generate Gross Profit Margin
+    tableString += '<tr ' + rowStyle( grossProfitArray ) + '>';
+    tableString += '<td class="ratio-li">Gross Profit Percentage</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + grossProfit( savedInfo[0][0], savedInfo[0][1] ) + '</td>';
+    tableString += '<td class="text-right">' + grossProfit( savedInfo[1][0], savedInfo[1][1] ) + '</td>';
+    tableString += '<td class="text-right">' + grossProfit( savedInfo[2][0], savedInfo[2][1] ) + '</td>';
+    tableString += '</tr>';
+
+    returnAssetsArray = [ parseInt( returnOnAssets( savedInfo[0][2], statementArray[0]['TotalAssets']['content'] )), parseInt( returnOnAssets( savedInfo[1][2], statementArray[1]['TotalAssets']['content'] )), parseInt( returnOnAssets( savedInfo[2][2], statementArray[2]['TotalAssets']['content'] )) ];
+
+    // Generate ROA
+    tableString += '<tr ' + rowStyle( returnAssetsArray ) + '>';
+    tableString += '<td class="ratio-li">Return on Assets</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td id="roaCurrPer" class="text-right">' + returnOnAssets( savedInfo[0][2], statementArray[0]['TotalAssets']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[1][2], statementArray[1]['TotalAssets']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[2][2], statementArray[2]['TotalAssets']['content'] ) + '</td>';
     tableString += '</tr>';
 
     // Generate ROE
     tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Return on Equity</td>';
+    tableString += '<td class="ratio-li">Return on Equity</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
     tableString += '<td class="text-right">' + returnOnEquity( savedInfo[0][3], statementArray[0]['TotalStockholderEquity']['content'] ) + '</td>';
@@ -101,21 +126,11 @@ function genRatios( statementArray ) {
     tableString += '<td class="text-right">' + returnOnEquity( savedInfo[2][3], statementArray[2]['TotalStockholderEquity']['content'] ) + '</td>';
     tableString += '</tr>';
 
-    // Generate ROA
-    tableString += '<tr>';
-    tableString += '<td>&nbsp;&nbsp;&nbsp;Return on Assets</td>';
-    tableString += '<td></td>';
-    tableString += '<td></td>';
-    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[0][2], statementArray[0]['TotalAssets']['content'] ) + '</td>';
-    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[1][2], statementArray[1]['TotalAssets']['content'] ) + '</td>';
-    tableString += '<td class="text-right">' + returnOnAssets( savedInfo[2][2], statementArray[2]['TotalAssets']['content'] ) + '</td>';
-    tableString += '</tr>';
-
     // ....annnnnd Fin :D
     tableString += '</tbody></table>';
 
     $("#raSection").append( tableString );
-    $("#raSection").append( "<br />" + writeReport() );
+    $("#raSection").append( writeReport() );
 
 }
 
@@ -213,6 +228,11 @@ function profitMargin( sales, netIncome )
     return (( 100 * netIncome )/sales).toFixed( 2 ) + "%";
 }
 
+function grossProfit( sales, cogs )
+{
+    return (100 * ( sales - cogs )/sales ).toFixed( 2 ) + "%";
+}
+
 // Helper functions
 
 function rowStyle( arr )
@@ -239,9 +259,11 @@ function decreasingArray( arr )
 
 function writeReport()
 {
-    var sigDiff = 5;
-    var rpt = "<div id='analysis'><h4>Analysis\n</h4><p>";
-    rpt += "<b>Profit Margin: </b>";
+    var sigDiff = 3;
+    var rpt = "<div id='analysis'><h4>Analysis</h4><p>";
+
+    // Profit Margin
+    rpt += "<b>Profit Margin: </b>The profit margin is the percentage of sales revenue that ends up as profit; a higher number is better! ";
     rpt += "The profit margin has ";
 
     if( profitMarginArray[0] > profitMarginArray[1] )
@@ -264,6 +286,48 @@ function writeReport()
             rpt += ". This is not a significant change, and is not indicative of any major trend.";
     }
 
+    rpt += "</p><br /><p>"
+
+    // Gross Profit Percentage
+    rpt += "<b>Gross Profit Percentage: </b>The gross profit percentage is the percent of profit remaining after paying for the costs of production. The lower the percentage, the more expensive the cost of revenues are relative to revenues. ";
+    rpt += "The gross profit percentage has ";
+
+    if( grossProfitArray[0] > grossProfitArray[1] )
+        rpt += "increased ";
+    else if( grossProfitArray[1] > grossProfitArray[0] )
+        rpt += "decreased ";
+    else
+        rpt += "not changed significantly ";
+
+    rpt += "in the last year";
+
+    if( increasingArray( grossProfitArray ))
+        rpt += ", and is part of an increasing trend. This means that either prices are rising and/or costs are falling. Consider the company's market share and influence on its suppliers, or demand for the product.";
+    else if( decreasingArray( grossProfitArray ))
+        rpt += ", and is part of a decreasing trend. This means that prices are falling and/or costs are rising. Consider inflation or the company's relative market share and influence on suppliers.";
+    else {
+        if( Math.abs( grossProfitArray[0] - grossProfitArray[1] ) > sigDiff )
+            rpt += ". This is a significant change from the prior year; check the news to see if anything has changed in the last year.";
+        else
+            rpt += ". This is not a significant change, and is not indicative of any major trend.";
+    }
+
+    rpt += "</p><br /><p>"
+
+    // Return on Assets
+
+    rpt += "<b>Return on Assets: </b>This is the return generated by the company's assets. This ratio is useful for determining how effective management is at using funding from creditors or shareholders to turn a profit. As usual, a higher percentage indicates a stronger company. For our purposes, this program calculates the ratio using EBIT.";
+    rpt += "</p><p>This company's return on assets for the prior period is " + $("#roaCurrPer").text() + ". This means that for every dollar in assets the company holds, the company generates approximately " + returnAssetsArray[0] + " cents in return. ";
+    rpt += "In the past year, the company's return on assets has ";
+
+    if( returnAssetsArray[0] - returnAssetsArray[1] >= sigDiff )
+        rpt += "increased significantly, indicating that the company has become significantly more efficient in using its resources. It is worth investigating this change. Some possibilities include a reduction in expenses or an increase in revenues, all while holding assets constant. It is also possible that the company is 'consuming' its assets without replenishing them, which is not as beneficial to the company's health. ";
+    else if ( returnAssetsArray[0] - returnAssetsArray[1] =< -1 * sigDiff )
+        rpt += "decreased significantly, indicating that something has affected the company's efficiency in using its assets. It is possible that the company has recently increased its assets without a corresponding increase in profitability; perhaps it hasn't had time to make use of its acquisition. The less cheery possibility also exists, that the company isn't using its assets as effectively as it once did, perhaps due to competitive pressure, bad strategy, or an economic downturn. ";
+    else
+        rpt += "not changed drastically. Depending on the industry average, this company may be a good investment or not. ";
+
+    rpt += "</p><p>Do note that since this application uses EBIT and not EBITDA to calculate RoA, it is possible that the company is taking creative liberties with its depreciation accounting policies to influence this ratio.";
     rpt += "</p></div>";
     return rpt;
 }
