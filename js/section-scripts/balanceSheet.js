@@ -10,9 +10,9 @@ function genBalanceSheet( statementArray ) {
     						'<th class="text-center">Asset</th>' +
     						'<th></th>' +
     						'<th></th>' +
-    						'<th class="text-center">' + statementArray[0]['period'] + '</th>' +
-    						'<th class="text-center">' + statementArray[1]['period'] + '</th>' +
-    						'<th class="text-center">' + statementArray[2]['period'] + '</th>' +
+    						'<th class="text-right">' + statementArray[0]['period'] + '</th>' +
+    						'<th class="text-right">' + statementArray[1]['period'] + '</th>' +
+    						'<th class="text-right">' + statementArray[2]['period'] + '</th>' +
     					'</tr></thead><tbody>';
 
     tableString += '<tr><td><b>Assets</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
