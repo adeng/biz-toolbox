@@ -2,6 +2,8 @@ var profitMarginArray = new Array();
 var grossProfitArray = new Array();
 var returnAssetsArray =  new Array();
 var returnEquityArray = new Array();
+var currRatioArray = new Array();
+var quickRatioArray = new Array();
 
 function genRatios( statementArray ) {
 	$("#loading").remove();
@@ -24,18 +26,22 @@ function genRatios( statementArray ) {
     // Generate header
     tableString += '<tr><td><b>Liquidity Ratios</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
+    currRatioArray = [ parseFloat( currentRatio( statementArray[0]['TotalCurrentAssets']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] )), parseFloat( currentRatio( statementArray[1]['TotalCurrentAssets']['content'], statementArray[1]['TotalCurrentLiabilities']['content'] )), parseFloat( currentRatio( statementArray[2]['TotalCurrentAssets']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] )) ];
+
     // Generate current ratio
-    tableString += '<tr>';
+    tableString += '<tr ' + liquidStyle( currRatioArray[0], 1, 2.5 ) + '>';
     tableString += '<td class="ratio-li">Current Ratio</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
-    tableString += '<td class="text-right">' + currentRatio( statementArray[0]['TotalCurrentAssets']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] ) + '</td>';
+    tableString += '<td id="crCurrPer" class="text-right">' + currentRatio( statementArray[0]['TotalCurrentAssets']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] ) + '</td>';
     tableString += '<td class="text-right">' + currentRatio( statementArray[1]['TotalCurrentAssets']['content'], statementArray[1]['TotalCurrentLiabilities']['content'] ) + '</td>';
     tableString += '<td class="text-right">' + currentRatio( statementArray[2]['TotalCurrentAssets']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] ) + '</td>';
     tableString += '</tr>';
 
+    quickRatioArray = [ parseFloat( quickRatio( statementArray[0]['CashAndCashEquivalents']['content'], statementArray[0]['ShortTermInvestments']['content'], statementArray[0]['NetReceivables']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] )), parseFloat( quickRatio( statementArray[1]['CashAndCashEquivalents']['content'], statementArray[1]['ShortTermInvestments']['content'], statementArray[1]['NetReceivables']['content'], statementArray[1]['TotalCurrentLiabilities']['content'] )), parseFloat( quickRatio( statementArray[2]['CashAndCashEquivalents']['content'], statementArray[2]['ShortTermInvestments']['content'], statementArray[2]['NetReceivables']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] ))];
+
     // Generate quick ratio
-    tableString += '<tr>';
+    tableString += '<tr ' + liquidStyle( quickRatioArray[0], 0.75, 1.75, 1 ) + '>';
     tableString += '<td class="ratio-li">Quick Ratio</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
@@ -239,6 +245,16 @@ function grossProfit( sales, cogs )
 
 // Helper functions
 
+function liquidStyle( ratio, lower, tooHigh, upper )
+{
+    if( ratio < lower || ratio >= tooHigh )
+        return "class='danger'";
+    else if( ratio >= lower && ratio <= upper )
+        return "class='warning'";
+    else
+        return "class='success'";
+}
+
 function rowStyle( arr )
 {
     if( increasingArray( arr ))
@@ -264,7 +280,9 @@ function decreasingArray( arr )
 function writeReport()
 {
     var sigDiff = 3;
-    var rpt = "<div id='analysis'><h4>Analysis</h4><p>";
+    var rpt = "<div id='analysis'><p>";
+
+    rpt += "</p><h4>Profitability Ratios</h4><p>"
 
     // Profit Margin
     rpt += "<b>Profit Margin: </b>The profit margin is the percentage of sales revenue that ends up as profit; a higher number is better! ";
@@ -336,7 +354,6 @@ function writeReport()
     rpt += "</p><br /><p>";
 
     // Return on Equity
-
     rpt += "<b>Return on Equity: </b>While similar to return on assets, this metric determines the return applicable to the company's shareholders. This percentage is useful for determining how effective a company is for the people that truly matter, the shareholders :) For the purposes of this application, this is calculated using the company's Net Income Applicable to Common Shareholders (excluding preferred capital distributions). ";
     rpt += "</p><p>This company's return on equity for the prior period is " + $("#roeCurrPer").text() + ". This means that for every dollar of stockholder funds, the company returns a profit of approximately " + returnEquityArray[0] + " cents to said shareholders. ";
 
@@ -362,6 +379,34 @@ function writeReport()
         rpt += "decreased sharply in the past year. This is not normally news for celebration, but it is posssible the company has just paid off a large amount of debt. Check the financials to see if this is the case; otherwise, check the news to see if there is anything that would affect the company's profitability. ";
     else
         rpt += "not really changed all that much. No major conclusions can really be drawn from this other than the company has not really changed since the last year. ";
+
+    // Liquidity Ratios
+    // Current Ratio
+    rpt += "</p><br /><h4>Liquidity Ratios</h4><p>";
+    rpt += "<b>Current Ratio: </b>This ratio measures how easily a business can pay short-term liabilities using assets it can turn into cash within a year. This is important largely because a low current ratio indicates liquidity issues, meaning that it will be difficult for the company to pay its bills using what it has available within a year. This ratio indicates the number of times the business can use its current assets to pay current liabilities. ";
+
+    rpt += "Since this company's current ratio ";
+    if( currRatioArray[0] < 1 )
+        rpt += "is less than 1, this indicates that the company may have a liquidity issue. It may need to sell non-current assets in order to meet its upcoming debts. This is not the sign of a healthy company. ";
+    else if ( currRatioArray[0] >= 1 && currRatioArray[0] < 2.5 )
+        rpt += "is " + currRatioArray[0] + ", then it can afford to pay off its upcoming obligations " + currRatioArray[0] + " times using what it has on hand. This is the sign of a healthy company; the current ratio is large enough to meet upcoming obligations, but not high enough to indicate that the company could be investing its assets better. ";
+    else
+        rpt += "is " + currRatioArray[0] + ", it can definitely afford to pay off its upcoming obligations (and then some). However, a ratio this high is not ideal, because these current assets could be better invested in non-current assets such as new equipment or long-term investments to return a higher return. ";
+
+    rpt += "</p><br /><p>";
+
+    // Quick Ratios
+    rpt += "<b>Quick Ratio: </b>This ratio is stricter than the current ratio in that it uses only the most liquid assets in its calculation (specifically, cash and cash equivalents, short-term investments, and receivables). These are assets that can be transformed into cash in a much shorter period of time, usually within 30 to 60 days. This often avoids the issues involved with liquidating some current assets, such as inventory, because these assets are excluded from the ratio's calculation. This metric is best used to measure the riskiness of a company. ";
+
+    rpt += "With a quick ratio of ";
+    if( quickRatioArray[0] < 0.75 )
+        rpt += quickRatioArray[0] + " , this company is not in the most ideal situation in terms of liquidity. This means that management will have to devote time and resources to restructuring itself to meet its upcoming short-term obligations, perhaps even selling non-current assets which will impact the company's ability to generate a return with said assets. ";
+    else if ( quickRatioArray[0] >= 0.75 && quickRatioArray[0] < 1 )
+        rpt += quickRatioArray[0] + ", this company is doing just fine, but may have trouble meeting its obligations in the event of a large shock. ";
+    else if ( quickRatioArray[0] >= 1 && quickRatioArray[0] < 1.75 )
+        rpt += quickRatioArray[0] + ", this company will certainly be able to meet its short-term obligations. This is the most ideal situation. ";
+    else
+        rpt += quickRatioArray[0] + ", this company will be able to meet its obligations, but has too much invested in short-term assets that will not provide as high of a return. This indicates an issue with management, which could potentially be allocating its resources to generate a higher return. ";
 
     rpt += "</p></div>";
     return rpt;
