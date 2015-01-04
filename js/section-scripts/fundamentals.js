@@ -4,6 +4,8 @@ var returnAssetsArray =  new Array();
 var returnEquityArray = new Array();
 var currRatioArray = new Array();
 var quickRatioArray = new Array();
+var cashRatioArray = new Array();
+var debtArray = new Array();
 
 function genRatios( statementArray ) {
 	$("#loading").remove();
@@ -41,7 +43,7 @@ function genRatios( statementArray ) {
     quickRatioArray = [ parseFloat( quickRatio( statementArray[0]['CashAndCashEquivalents']['content'], statementArray[0]['ShortTermInvestments']['content'], statementArray[0]['NetReceivables']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] )), parseFloat( quickRatio( statementArray[1]['CashAndCashEquivalents']['content'], statementArray[1]['ShortTermInvestments']['content'], statementArray[1]['NetReceivables']['content'], statementArray[1]['TotalCurrentLiabilities']['content'] )), parseFloat( quickRatio( statementArray[2]['CashAndCashEquivalents']['content'], statementArray[2]['ShortTermInvestments']['content'], statementArray[2]['NetReceivables']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] ))];
 
     // Generate quick ratio
-    tableString += '<tr ' + liquidStyle( quickRatioArray[0], 0.75, 1.75, 1 ) + '>';
+    tableString += '<tr ' + liquidStyle( quickRatioArray[0], 0.75, 2, 1 ) + '>';
     tableString += '<td class="ratio-li">Quick Ratio</td>';
     tableString += '<td></td>';
     tableString += '<td></td>';
@@ -50,8 +52,32 @@ function genRatios( statementArray ) {
     tableString += '<td class="text-right">' + quickRatio( statementArray[2]['CashAndCashEquivalents']['content'], statementArray[2]['ShortTermInvestments']['content'], statementArray[2]['NetReceivables']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] ) + '</td>';
     tableString += '</tr>';
 
+    cashRatioArray = [ parseFloat( cashRatio( statementArray[0]['CashAndCashEquivalents']['content'], statementArray[0]['ShortTermInvestments']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] )), parseFloat( cashRatio( statementArray[1]['CashAndCashEquivalents']['content'], statementArray[1]['ShortTermInvestments']['content'], statementArray[1]['TotalCurrentLiabilities']['content'] )), parseFloat( cashRatio( statementArray[2]['CashAndCashEquivalents']['content'], statementArray[2]['ShortTermInvestments']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] ))];
+
+    // Generate cash ratio
+    tableString += '<tr ' + liquidStyle( cashRatioArray[0], 0.35, 1.5, 0.7 ) + '>';
+    tableString += '<td class="ratio-li">Cash Ratio</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + cashRatio( statementArray[0]['CashAndCashEquivalents']['content'], statementArray[0]['ShortTermInvestments']['content'], statementArray[0]['TotalCurrentLiabilities']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + cashRatio( statementArray[1]['CashAndCashEquivalents']['content'], statementArray[1]['ShortTermInvestments']['content'], statementArray[1]['TotalCurrentLiabilities']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + cashRatio( statementArray[2]['CashAndCashEquivalents']['content'], statementArray[2]['ShortTermInvestments']['content'], statementArray[2]['TotalCurrentLiabilities']['content'] ) + '</td>';
+    tableString += '</tr>';
+
     // Another header
     tableString += '<tr><td><b>Leverage Ratios</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+    debtArray = [ parseFloat( debtRatio( statementArray[0]['TotalLiabilities']['content'], statementArray[0]['TotalAssets']['content'] )), parseFloat( debtRatio( statementArray[1]['TotalLiabilities']['content'], statementArray[1]['TotalAssets']['content'] )), parseFloat( debtRatio( statementArray[2]['TotalLiabilities']['content'], statementArray[2]['TotalAssets']['content'] )) ];
+
+    // Generate debt ratio
+    tableString += '<tr ' + liquidStyle( debtArray[0], 0, 65 ) + '>';
+    tableString += '<td class="ratio-li">Debt Ratio</td>';
+    tableString += '<td></td>';
+    tableString += '<td></td>';
+    tableString += '<td class="text-right">' + debtRatio( statementArray[0]['TotalLiabilities']['content'], statementArray[0]['TotalAssets']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + debtRatio( statementArray[1]['TotalLiabilities']['content'], statementArray[1]['TotalAssets']['content'] ) + '</td>';
+    tableString += '<td class="text-right">' + debtRatio( statementArray[2]['TotalLiabilities']['content'], statementArray[2]['TotalAssets']['content'] ) + '</td>';
+    tableString += '</tr>';
 
     // Generate debt-equity ratio
     tableString += '<tr>';
@@ -173,6 +199,31 @@ function quickRatio( cash, sti, receive, currLiabilities )
 		return ( ca / cl ).toFixed( 2 );
 }
 
+function cashRatio( cash, sti, currLiabilities )
+{
+    var ca = 0;
+    if( parseInt( cash ) * 1 == parseInt( cash ) )
+        ca += parseInt( cash );
+    if( parseInt( sti ) * 1 == parseInt( sti ) )
+        ca += parseInt( sti );
+    
+    var cl = parseInt( currLiabilities );
+    if( cl == 0 || ca * 1 != ca || cl * 1 != cl )
+        return "-";
+    else
+        return ( ca / cl ).toFixed( 2 );
+}
+
+function debtRatio( liabilities, assets )
+{
+    var li = parseInt( liabilities );
+    var as = parseInt( assets );
+    if( as == 0 || as * 1 != as || li * 1 != li )
+        return "-"
+    else
+        return ( 100 * li / as ).toFixed(2) + "%";
+}
+
 function debtEquityRatio( ltdebt, stdebt, tsEquity )
 {
 	var de = 0;
@@ -247,9 +298,9 @@ function grossProfit( sales, cogs )
 
 function liquidStyle( ratio, lower, tooHigh, upper )
 {
-    if( ratio < lower || ratio >= tooHigh )
+    if( ratio < lower )
         return "class='danger'";
-    else if( ratio >= lower && ratio <= upper )
+    else if( ( ratio >= lower && ratio <= upper ) || ratio >= tooHigh )
         return "class='warning'";
     else
         return "class='success'";
@@ -403,10 +454,40 @@ function writeReport()
         rpt += quickRatioArray[0] + " , this company is not in the most ideal situation in terms of liquidity. This means that management will have to devote time and resources to restructuring itself to meet its upcoming short-term obligations, perhaps even selling non-current assets which will impact the company's ability to generate a return with said assets. ";
     else if ( quickRatioArray[0] >= 0.75 && quickRatioArray[0] < 1 )
         rpt += quickRatioArray[0] + ", this company is doing just fine, but may have trouble meeting its obligations in the event of a large shock. ";
-    else if ( quickRatioArray[0] >= 1 && quickRatioArray[0] < 1.75 )
+    else if ( quickRatioArray[0] >= 1 && quickRatioArray[0] < 2 )
         rpt += quickRatioArray[0] + ", this company will certainly be able to meet its short-term obligations. This is the most ideal situation. ";
     else
         rpt += quickRatioArray[0] + ", this company will be able to meet its obligations, but has too much invested in short-term assets that will not provide as high of a return. This indicates an issue with management, which could potentially be allocating its resources to generate a higher return. ";
+
+    rpt += "</p><br /><p>";
+
+    // Cash Ratio
+    rpt += "<b>Cash Ratio: </b>This ratio is the strictest of all; it only allows cash, cash equivalents, and short-term investments in its computation. This is to measure the company's ability to pay off current liabilities in a few days' time, accepting only the most liquid assets. While a high cash ratio means the lowest risk, it also means that the company holds a large amount of cash, cash which could be better invested elsewhere. ";
+    rpt += "This company has a cash ratio of " + cashRatioArray[0];
+    if( cashRatioArray[0] < 0.7 )
+        rpt += ", which means it would be able to pay only " + cashRatioArray[0] + "% of its liabilities if they were to suddenly come due. This is not necessarily a bad thing; only in the most direst of emergencies would the company actually need to employ its cash for this purpose. Still, this company is a bit riskier than one with a higher cash ratio. ";
+    else if ( cashRatioArray[0] >= 0.7 && cashRatioArray[0] < 1 )
+        rpt += ", which means it would be able to pay most of its liabilities if they were to suddenly come due. While this is still less than 1, it is probably acceptable in terms of risk. ";
+    else if ( cashRatioArray[0] >= 1 && cashRatioArray[0] < 1.5 )
+        rpt += ", which means it would be able to pay off all of its liabilities if they were to suddenly come due. This company is perfectly safe to invest in. ";
+    else
+        rpt += ", which means it would be able to pay off all of its liabilities if they were to suddenly come due. However, this ratio is a bit high; this means the company is holding a large amount of its money in current assets, which could potentially be better invested in non-current assets. ";
+
+    // Leverage Ratios
+    // Debt Ratio
+    rpt += "</p><br /><h4>Leverage Ratios</h4><p>";
+    rpt += "<b>Debt Ratio: </b>This is a measure of the level of liabilities relative to assets. This ratio indicates how leveraged the company is; this is less of a risk for larger companies which can afford to do so. If the company were to be liquidated, this ratio also measures what percentage of assets goes to creditors, with the remaining amount (100 - debt ratio) going to shareholders. ";
+    rpt += "This company's debt ratio of " + debtArray[0] + " indicates that for every dollar of assets the company holds, it has approximately " + ( debtArray[0] / 100 ).toFixed(2) + " cents in debt. ";
+    if( debtArray[0] > 65 )
+        rpt += "This is a tad much. Do consider the company's market cap before jumping to conclusions, however. If this company is a relatively small company, then this is not exactly a good thing. If it is a large blue chip company, however, the company probably knows what it's doing, and is probably taking on debt to leverage its earnings. ";
+    else if( debtArray[0] < 40 )
+        rpt += "This is a very healthy debt ratio indicating a very low level of risk. ";
+    else
+        rpt += "This company's liabilities are about half of its assets, resulting in a moderate amount of risk. Again, consider the company's market cap and the overall trend before making any conclusions. ";
+    if( increasingArray( debtRatio ))
+        rpt += "Additionally, this company's debt ratio has exhibited an increasing trend over time, indicating that it has either been taking on more and more debt recently or that its assets have lost value. This is not a good trend. ";
+    else if ( decreasingArray( debtRatio ))
+        rpt += "Additionally, this company's debt ratio has exhibited a decreasing trend over time, indicating that it is becoming safer and less risky. Theoretically, there is either an increase in the amount of assets with which the company can pay off debt, or it has been decreasing its debt. In either case, this is a good thing. ";
 
     rpt += "</p></div>";
     return rpt;
